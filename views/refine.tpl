@@ -23,7 +23,7 @@
     <div id="pt-filter-wrap" class="refine-buttons">
 
         <div class="relative pt-datepicker" id="js-filter-dp-div">
-            <div class="dp-inline poup-container" id="filter-dp">
+            <div class="dp-inline" id="filter-dp">
                 <div class="datepicker-input sp-datepicker fl-btn">
                     <button id="standalone-dp">Dates</button>
                 </div>
@@ -98,33 +98,31 @@
 
 <script src="/static/js/refine.js"></script>
 <script>
-    // Sort dropdown
     const sortWrap = document.getElementById('js-filter-sort');
     const defaultOpt = sortWrap.querySelector('.default-option');
     const hiddenInput = document.getElementById('sort-properties');
 
-    // Toggle open/close on click
     defaultOpt.addEventListener('click', () => {
         sortWrap.classList.toggle('active');
     });
 
-    // Select an option
     sortWrap.querySelectorAll('.select-ul li').forEach(li => {
         li.addEventListener('click', () => {
             const value = li.getAttribute('data-value');
             const text  = li.querySelector('p').textContent;
-            // Update displayed text
             defaultOpt.querySelector('p').textContent = text;
             hiddenInput.value = value;
             sortWrap.classList.remove('active');
+
+            // Call loadProperties from refine.js
+            if (window.loadProperties && window.currentCategory) {
+                window.loadProperties(window.currentCategory, value);
+            }
         });
     });
 
-    // Close when clicking outside
     document.addEventListener('click', (e) => {
-        if (!sortWrap.contains(e.target)) {
-            sortWrap.classList.remove('active');
-        }
+        if (!sortWrap.contains(e.target)) sortWrap.classList.remove('active');
     });
 </script>
 
