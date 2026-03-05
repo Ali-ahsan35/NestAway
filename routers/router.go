@@ -11,4 +11,5 @@ func init() {
 	beego.Router("/api/breadcrumb", &controllers.RefineController{}, "get:GetBreadcrumb")
 	beego.Router("/api/properties", &controllers.PropertiesController{}, "get:Get")
 	beego.Router("/api/propertydetails", &controllers.PropertyDetailsController{}, "get:Get")
+	beego.Router("/api/categorydetails/:country", &controllers.CategoryDetailsController{}, "get:Get")
 }
