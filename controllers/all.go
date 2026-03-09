@@ -97,6 +97,52 @@ func (c *AllController) Get() {
 		processedItems = append(processedItems, itemMap)
 	}
 
+	// After existing items extraction, add:
+	sections := []interface{}{}
+	if resultMap, ok := result["Result"].(map[string]interface{}); ok {
+		if sectionsList, ok := resultMap["Sections"].([]interface{}); ok {
+			// Process each section's items same as main items
+			for _, section := range sectionsList {
+				sectionMap, ok := section.(map[string]interface{})
+				if !ok {
+					continue
+				}
+				sectionItems, _ := sectionMap["Items"].([]interface{})
+				processedSectionItems := []map[string]interface{}{}
+				for _, item := range sectionItems {
+					itemMap, ok := item.(map[string]interface{})
+					if !ok {
+						continue
+					}
+					prop, _ := itemMap["Property"].(map[string]interface{})
+					if prop != nil {
+						amenitiesMap, _ := prop["Amenities"].(map[string]interface{})
+						top3 := []string{}
+						for _, v := range amenitiesMap {
+							if len(top3) >= 3 {
+								break
+							}
+							top3 = append(top3, v.(string))
+						}
+						prop["TopAmenities"] = top3
+						itemMap["Property"] = prop
+					}
+					processedSectionItems = append(processedSectionItems, itemMap)
+				}
+				sectionMap["ProcessedItems"] = processedSectionItems
+
+				// Replace {{.Location}} in title with location name
+				title, _ := sectionMap["Title"].(string)
+				subTitle, _ := sectionMap["SubTitle"].(string)
+				sectionMap["Title"] = strings.ReplaceAll(title, "{{.Location}}", locationName)
+				sectionMap["SubTitle"] = strings.ReplaceAll(subTitle, "{{.Location}}", locationName)
+
+				sections = append(sections, sectionMap)
+			}
+		}
+	}
+
+	c.Data["Sections"] = sections
 	c.Data["Items"] = processedItems
 	c.Data["Country"] = country
 	c.Data["LocationName"] = locationName
@@ -104,9 +150,8 @@ func (c *AllController) Get() {
 	c.Data["Breadcrumbs"] = breadcrumbs
 	c.Data["Items"] = items
 	c.TplName = "all.tpl"
-	// c.Layout = ""  
 
-	// // Load both templates
-	// beego.ExecuteTemplate(c.Ctx.ResponseWriter, "all.tpl", c.Data)
+	// Load both templates
+	beego.ExecuteTemplate(c.Ctx.ResponseWriter, "all.tpl", c.Data)
 
 }

@@ -15,6 +15,14 @@ func main() {
     beego.AddFuncMap("contains", func(s, substr string) bool {
         return strings.Contains(s, substr)
     })
+	beego.AddFuncMap("dict", func(values ...interface{}) map[string]interface{} {
+		dict := map[string]interface{}{}
+		for i := 0; i < len(values); i += 2 {
+			key, _ := values[i].(string)
+			dict[key] = values[i+1]
+		}
+		return dict
+	})
 	beego.Run()
 }
 
