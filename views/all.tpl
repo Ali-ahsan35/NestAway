@@ -27,6 +27,12 @@
             margin: 0 !important;
             float: none !important;
         }
+        .heart-btn { cursor: pointer; font-size: 18px; color: white; transition: color 0.2s; }
+        .heart-btn.active { color: red; }
+        .image-section { position: relative !important; }
+        .tiles-icons { position: absolute !important; top: 8px !important; right: 8px !important; z-index: 10 !important; }
+        .sp-property-card .image-section { position: relative !important; }
+        .sp-property-card .image-section .tiles-icons { position: absolute !important; top: 8px !important; right: 8px !important; z-index: 10 !important; }
 
         @media (max-width: 1200px) { .grid { grid-template-columns: repeat(3, 1fr) !important; } }
         @media (max-width: 860px)  { .grid { grid-template-columns: repeat(2, 1fr) !important; } }
@@ -124,6 +130,88 @@
 
     </div>
     {{end}}
+
+    <script>
+    function redirectToPartner(btn) {
+        // Find the parent card
+        const card = btn.closest('.sp-property-card');
+
+        console.log("all data attributes:", card.dataset);
+        console.log("index value:", card.dataset.index);
+
+        // Read all data attributes
+        const propertyId  = card.dataset.property_id;
+        const feed        = card.dataset.feed;
+        const published   = card.dataset.published;
+        const upat        = card.dataset.upat;
+        const lat         = card.dataset.lat;
+        const lng         = card.dataset.lng;
+        const type        = card.dataset.type;
+        const destId      = card.dataset.dest_id;
+        const ownerId     = card.dataset.owner_id;
+        const directUrl   = card.dataset.direct_url;
+        const display     = card.dataset.display;
+        const city        = card.dataset.city;
+        const country     = card.dataset.country;
+        const countryCode = card.dataset.country_code;
+        const epc         = card.dataset.epc;
+        const eplId       = card.dataset.eplid;
+        const index       = card.dataset.index; 
+
+        // Generate menu_id — timestamp of this moment
+        const menuId = Date.now();
+
+        // Build referral_id — index not available so use 0
+        const referralId = index + "-" + propertyId;
+
+        // Build params
+        const params = new URLSearchParams({
+            menu_id:            menuId,
+            lang:               "en-US",
+            feed:               feed,
+            property_id:        propertyId,
+            published:          published,
+            upat:               upat,
+            latitude:           lat,
+            longitude:          lng,
+            type:               type.toLowerCase(),
+            referrer_page:      "category",
+            guests:             "2",
+            dest_id:            destId,
+            owner_id:           ownerId,
+            direct_redirect_url: directUrl,
+            search_string:      display,
+            epc:                epc,
+            referral_id:        referralId,
+            pl:                 city,
+            pc:                 country,
+            pcc:                countryCode,
+            eplId:              eplId,
+            user_type:          "dd",
+            currency:           "BDT"
+        });
+
+        const redirectUrl = "http://localhost:8080/redirect-partner?" + params.toString();
+        console.log("Redirecting to:", redirectUrl);
+
+        window.open(redirectUrl, "_blank");
+    }
+    </script>
+    
+    <script src="/static/js/favourite.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        let favourites = JSON.parse(localStorage.getItem('favourite_list') || '{}');
+        Object.keys(favourites).forEach(id => {
+                const btn = document.querySelector(`.heart-btn[data-id="${id}"]`);
+                if (btn) {
+                    const icon = btn.querySelector('.heart-icon');
+                    icon.setAttribute('fill', 'red');
+                    icon.setAttribute('stroke', 'red');
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>

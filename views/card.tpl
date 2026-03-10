@@ -6,12 +6,33 @@
 {{$id := index $item "ID"}}
 
 {{if $prop}}
-<div class="sp-property-card" data-property_id="{{$id}}">
+<div class="sp-property-card"
+    data-property_id="{{$id}}"
+    data-feed="{{index $item "Feed"}}"
+    data-published="{{index $item "Published"}}"
+    data-upat="{{index $prop "UpdatedAt"}}"
+    data-lat="{{index $geo "Lat"}}"
+    data-lng="{{index $geo "Lng"}}"
+    data-type="{{index $prop "PropertyType"}}"
+    data-dest_id="{{index $partner "ID"}}"
+    data-owner_id="{{index $partner "OwnerID"}}"
+    data-direct_url="{{index $partner "URL"}}"
+    data-display="{{index $geo "Display"}}"
+    data-city="{{index $geo "City"}}"
+    data-country="{{index $geo "Country"}}"
+    data-country_code="{{index $geo "CountryCode"}}"
+    data-epc="{{index $partner "EpCluster"}}"
+    data-eplid="{{index $geo "LocationID"}}"
+    data-index="{{index $item "Index"}}">
 
     <!-- Image -->
-    <div class="image-section relative">
-        <div class="tiles-icons absolute">
-            <div class="tiles-btn fav-icon heart-btn" data-id="{{$id}}" title="Bookmark">♡</div>
+    <div class="image-section relative" style="position:relative;">
+        <div class="tiles-icons" style="position:absolute; top:8px; right:8px; z-index:10;">
+            <div class="tiles-btn fav-icon heart-btn" data-id="{{$id}}" title="Bookmark" onclick="toggleFavourite(this)">
+                <svg class="heart-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            </div>
         </div>
         <a rel="nofollow" target="_blank" class="sp-property-image" href="{{index $partner "URL"}}">
             {{$imgName := index $prop "FeatureImage"}}
@@ -91,8 +112,9 @@
                 </a>
             </div>
             <a rel="nofollow" target="_blank"
-                class="availability-button pt-availability"
-                href="{{index $partner "URL"}}">
+                class="availability-button pt-availability js-view-availability"
+                href="#"
+                onclick="redirectToPartner(this); return false;">
                 View Availability
             </a>
         </div>

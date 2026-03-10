@@ -14,4 +14,5 @@ func init() {
 	beego.Router("/api/propertydetails", &controllers.PropertyDetailsController{}, "get:Get")
 	beego.Router("/api/v1/category/details/?:country", &controllers.CategoryDetailsController{}, "get:Get")
 	beego.Router("/all/:country", &controllers.AllController{}, "get:Get")
+	beego.Router("/redirect-partner", &controllers.RedirectPartnerController{}, "get:Get")
 }

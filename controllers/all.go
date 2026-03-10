@@ -29,8 +29,6 @@ func (c *AllController) Get() {
         return
     }
 
-	// req.Header.Set("X-Requested-With", "XMLHttpRequest")
-
     client := &http.Client{}
     resp, err := client.Do(req)
     if err != nil {
@@ -76,11 +74,12 @@ func (c *AllController) Get() {
 
 	// Process items to extract first 3 amenities
 	processedItems := []map[string]interface{}{}
-	for _, item := range items {
+	for i, item := range items {
 		itemMap, ok := item.(map[string]interface{})
 		if !ok {
 			continue
 		}
+		itemMap["Index"] = i
 		prop, _ := itemMap["Property"].(map[string]interface{})
 		if prop != nil {
 			amenitiesMap, _ := prop["Amenities"].(map[string]interface{})
@@ -102,7 +101,7 @@ func (c *AllController) Get() {
 	if resultMap, ok := result["Result"].(map[string]interface{}); ok {
 		if sectionsList, ok := resultMap["Sections"].([]interface{}); ok {
 			// Process each section's items same as main items
-			for _, section := range sectionsList {
+			for i, section := range sectionsList {
 				sectionMap, ok := section.(map[string]interface{})
 				if !ok {
 					continue
@@ -114,6 +113,7 @@ func (c *AllController) Get() {
 					if !ok {
 						continue
 					}
+					itemMap["Index"] = i
 					prop, _ := itemMap["Property"].(map[string]interface{})
 					if prop != nil {
 						amenitiesMap, _ := prop["Amenities"].(map[string]interface{})
