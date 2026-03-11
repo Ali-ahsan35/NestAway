@@ -115,12 +115,12 @@ document.getElementById('js-apply-filter').addEventListener('click', () => {
         checkedAmenities.push('11');
     }
 
-    const ecoFriendly  = document.getElementById('js-eco-friendly').checked;
-    const minPriceBDT  = parseInt(minInput.value) || MIN;
-    const maxPriceBDT  = parseInt(maxInput.value) || MAX;
-    const guests       = guestCount.textContent;
+    const ecoFriendly = document.getElementById('js-eco-friendly').checked;
+    const minPriceBDT = parseInt(minInput.value) || MIN;
+    const maxPriceBDT = parseInt(maxInput.value) || MAX;
+    const guests      = guestCount.textContent;
 
-    // Convert BDT to USD (÷ 120) for the API
+    // Convert BDT to USD for API
     const minPriceUSD = Math.round(minPriceBDT / 120);
     const maxPriceUSD = Math.round(maxPriceBDT / 120);
 
@@ -128,6 +128,7 @@ document.getElementById('js-apply-filter').addEventListener('click', () => {
         amenities:   [...new Set(checkedAmenities)],
         ecoFriendly: ecoFriendly,
         amount:      (minPriceBDT > MIN || maxPriceBDT < MAX) ? `${minPriceUSD}-${maxPriceUSD}` : '',
+        amountBDT:   (minPriceBDT > MIN || maxPriceBDT < MAX) ? `${minPriceBDT}-${maxPriceBDT}` : '',
         guests:      guests !== '0' ? guests : ''
     };
 

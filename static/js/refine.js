@@ -32,19 +32,62 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Save category globally so sort script can access it
       currentCategory = breadcrumbData?.GeoInfo?.LocationSlug;
-      window.currentCategory = currentCategory; // ← expose to window
+      window.currentCategory = currentCategory;
 
-      // Load properties with default sort (order=1)
+      // Read filters from URL on page load
       const urlParams = new URLSearchParams(window.location.search);
       const defaultOrder = parseInt(urlParams.get('order')) || 1;
-      window.loadProperties(currentCategory, defaultOrder);
+
+      const savedFilters = {};
+      if (urlParams.get('amenities')) {
+          savedFilters.amenities = urlParams.get('amenities').split('-').map(Number);
+      }
+      if (urlParams.get('ecoFriendly')) {
+          savedFilters.ecoFriendly = true;
+      }
+      if (urlParams.get('amount')) {
+          savedFilters.amount = urlParams.get('amount');
+      }
+      if (urlParams.get('guests')) {
+          savedFilters.guests = parseInt(urlParams.get('pax'));
+      }
+
+      window.loadProperties(currentCategory, defaultOrder, savedFilters);
     })
     .catch((err) => {
       console.error("Breadcrumb error:", err);
     });
 
+
+  function updateURL(order, filters = {}) {
+    const params = new URLSearchParams();
+    
+    // Always include search and order
+    params.set('search', window.searchKeyword);
+    params.set('order', order);
+    
+    // Add filters if set
+    if (filters.amenities && filters.amenities.length > 0) {
+        params.set('amenities', filters.amenities.join("-"));
+    }
+    if (filters.ecoFriendly) {
+        params.set('ecoFriendly', 'true');
+    }
+    if (filters.amount) {
+    // Use BDT amount in URL if available, otherwise use amount as-is
+    params.set('amount', filters.amountBDT || filters.amount);
+    params.set('selectedCurrency', 'BDT');
+    }
+    if (filters.guests && filters.guests > 0) {
+        params.set('pax', filters.guests);
+    }
+
+    // Update URL without reloading page
+    window.history.pushState({}, '', '/refine?' + params.toString());
+}
   // Expose to window so the sort script in refine.tpl can call it
   window.loadProperties = function (category, order, filters = {}) {
+    updateURL(order, filters);
     showLoading();
 
     let url =
@@ -277,4 +320,6 @@ document.addEventListener("DOMContentLoaded", function () {
       grid.appendChild(card);
     });
   }
+
+
 });
