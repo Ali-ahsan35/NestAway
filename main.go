@@ -23,6 +23,9 @@ func main() {
 		}
 		return dict
 	})
+	beego.AddFuncMap("replace", func(s, old, new string) string {
+    return strings.ReplaceAll(s, old, new)
+	})
 	beego.Run()
 }
 

@@ -15,16 +15,17 @@ type AllController struct {
 }
 
 func (c *AllController) Get() {
-    country := strings.ToLower(c.Ctx.Input.Param(":country"))
+	rawSlug := c.Ctx.Input.Param(":splat")
+	// slug := strings.ToLower(strings.ReplaceAll(rawSlug, "/", ":"))
 
-    apiURL := "http://localhost:8080/api/v1/category/details/" + country
+	apiURL := "http://localhost:8080/api/v1/category/details/" + rawSlug
 
     fmt.Println("Calling our API:", apiURL)
 
     req, err := http.NewRequest("GET", apiURL, nil)
     if err != nil {
         c.Data["Error"] = err.Error()
-        c.Data["Country"] = country
+        c.Data["Country"] = rawSlug
         c.TplName = "all.tpl"
         return
     }
@@ -34,7 +35,7 @@ func (c *AllController) Get() {
     if err != nil {
         fmt.Println("Error calling our API:", err)
         c.Data["Error"] = err.Error()
-        c.Data["Country"] = country
+        c.Data["Country"] = rawSlug
         c.TplName = "all.tpl"
         return
     }
@@ -144,14 +145,14 @@ func (c *AllController) Get() {
 
 	c.Data["Sections"] = sections
 	c.Data["Items"] = processedItems
-	c.Data["Country"] = country
+	c.Data["Country"] = rawSlug
 	c.Data["LocationName"] = locationName
 	c.Data["PropertyCount"] = propertyCount
 	c.Data["Breadcrumbs"] = breadcrumbs
-	c.Data["Items"] = items
+	// c.Data["Items"] = items
 	c.TplName = "all.tpl"
 
 	// Load both templates
-	beego.ExecuteTemplate(c.Ctx.ResponseWriter, "all.tpl", c.Data)
+	// beego.ExecuteTemplate(c.Ctx.ResponseWriter, "all.tpl", c.Data)
 
 }

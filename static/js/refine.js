@@ -19,9 +19,11 @@ document.addEventListener("DOMContentLoaded", function () {
         (breadcrumbs[breadcrumbs.length - 1]?.Name || "") +
         " &nbsp;|&nbsp; ";
       breadcrumbs.forEach((item, i) => {
-        bc.innerHTML += `<span>${item.Name}</span>`;
-        if (i < breadcrumbs.length - 1)
-          bc.innerHTML += `<span class="sep"> › </span>`;
+          // Build slug from Display array joined with "/"
+          const slug = item.Display.join("/");
+          bc.innerHTML += `<a href="/all/${slug}" style="color:inherit; text-decoration:none;">${item.Name}</a>`;
+          if (i < breadcrumbs.length - 1)
+              bc.innerHTML += `<span class="sep"> › </span>`;
       });
 
       const locationName = breadcrumbData?.GeoInfo?.ShortName || "Barcelona";
@@ -201,13 +203,13 @@ document.addEventListener("DOMContentLoaded", function () {
         ? Object.values(p.Amenities).slice(0, 3)
         : [];
 
-      // Build breadcrumb location list
-      const display = geo?.Display || [];
-      const locationItems = Array.isArray(display)
-        ? display
-            .map((d) => `<li><span class="pt-tile-bdc">${d}</span></li>`)
-            .join("")
-        : `<li><span class="pt-tile-bdc">${display}</span></li>`;
+      // Build breadcrumb location list from Categories
+      const categories = geo?.Categories || [];
+      const locationItems = categories.length > 0
+          ? categories.map((cat) => {
+              return `<li><a href="/all/${cat.Slug}" class="pt-tile-bdc" style="color:inherit; text-decoration:none;">${cat.Name}</a></li>`;
+          }).join("")
+          : `<li><span class="pt-tile-bdc">${geo?.Display || ""}</span></li>`;
 
       // Build amenities list
       const amenityItems = amenities

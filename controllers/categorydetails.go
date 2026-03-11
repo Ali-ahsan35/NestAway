@@ -15,14 +15,16 @@ type CategoryDetailsController struct {
 }
 
 func (c *CategoryDetailsController) Get() {
-    country := strings.ToLower(c.Ctx.Input.Param(":country"))
-    if country == "" {
+    rawSlug := c.Ctx.Input.Param(":splat")
+    slug := strings.ToLower(strings.ReplaceAll(rawSlug, "/", ":"))
+
+    if slug == "" {
         c.Data["json"] = map[string]string{"error": "country is required"}
         c.ServeJSON()
         return
     }
 
-    apiURL := "https://presto:TRAV3LA1@ownerdirect.beta.123presto.com/api/v1/category/details/" + country +
+    apiURL := "https://presto:TRAV3LA1@ownerdirect.beta.123presto.com/api/v1/category/details/" + slug +
         "?aggsAvgPrice=1" +
         "&aggsAvgRating=1" +
         "&aggsAvgRoomSize=1" +
