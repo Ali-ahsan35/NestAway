@@ -4,8 +4,7 @@
     <title>{{.Country}} - Vacation Rentals</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     
-
-
+    <link rel="stylesheet" type="text/css" href="https://cdn.123presto.com/prod/static/css/hotel-datepicker-1.1.83.css"/>
     <link rel="stylesheet" href="/static/css/variables.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.123presto.com/prod/static/css/global-1.1.80.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.123presto.com/prod/static/css/refine-1.1.80.css"/>
@@ -33,6 +32,111 @@
         .tiles-icons { position: absolute !important; top: 8px !important; right: 8px !important; z-index: 10 !important; }
         .sp-property-card .image-section { position: relative !important; }
         .sp-property-card .image-section .tiles-icons { position: absolute !important; top: 8px !important; right: 8px !important; z-index: 10 !important; }
+        /* Datepicker Modal */
+        #js-datepicker-modal .datepicker__month {
+            width: auto !important;
+        }
+        #js-datepicker-modal .datepicker {
+            box-shadow: none !important;
+            border: none !important;
+            width: 100% !important;
+        }
+        #js-datepicker-modal .datepicker__inner {
+            padding: 0 !important;
+        }
+        #js-datepicker-modal .datepicker__months {
+            display: flex !important;
+            gap: 40px !important;
+            justify-content: center !important;
+        }
+        #js-datepicker-modal .datepicker__month-name {
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            color: #0b1833 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+        }
+        #js-datepicker-modal .datepicker__week-name {
+            font-size: 12px !important;
+            color: #6b7280 !important;
+            font-weight: 600 !important;
+        }
+        #js-datepicker-modal .datepicker__month-day {
+            font-size: 13px !important;
+            padding: 8px !important;
+            border-radius: 50% !important;
+            cursor: pointer !important;
+        }
+        #js-datepicker-modal .datepicker__month-day--invalid {
+            color: #ccc !important;
+            cursor: default !important;
+        }
+        #js-datepicker-modal .datepicker__month-day--valid:hover {
+            background: #013573 !important;
+            color: white !important;
+        }
+        #js-datepicker-modal .datepicker__month-day--first-day-selected,
+        #js-datepicker-modal .datepicker__month-day--last-day-selected {
+            background: #013573 !important;
+            color: white !important;
+            border-radius: 50% !important;
+        }
+        #js-datepicker-modal .datepicker__month-day--selected {
+            background: #e8f0fe !important;
+            border-radius: 0 !important;
+        }
+        #js-datepicker-modal .datepicker__month-day--today {
+            font-weight: 700 !important;
+            color: #013573 !important;
+        }
+        #js-datepicker-modal .datepicker__topbar {
+            background: white !important;
+            border-top: 1px solid #eee !important;
+            padding: 16px 0 0 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+        #js-datepicker-modal .datepicker__info--selected {
+            font-size: 13px !important;
+            color: #333 !important;
+            font-weight: 600 !important;
+        }
+        #js-datepicker-modal .datepicker__info-text--start-day,
+        #js-datepicker-modal .datepicker__info-text--end-day {
+            text-transform: uppercase !important;
+            font-weight: 700 !important;
+        }
+        #js-datepicker-modal .datepicker__submit-button {
+            background: #ff6b35 !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 12px 28px !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+            cursor: pointer !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            line-height: 1.3 !important;
+        }
+        #js-datepicker-modal .btn-skip {
+            background: none !important;
+            border: none !important;
+            color: #ff6b35 !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            cursor: pointer !important;
+        }
+        #js-datepicker-modal .datepicker__month-button {
+            font-size: 18px !important;
+            color: #013573 !important;
+            cursor: pointer !important;
+        }
+        #js-datepicker-modal .datepicker__info--feedback {
+            display: none !important;
+        }
 
         @media (max-width: 1200px) { .grid { grid-template-columns: repeat(3, 1fr) !important; } }
         @media (max-width: 860px)  { .grid { grid-template-columns: repeat(2, 1fr) !important; } }
@@ -76,9 +180,8 @@
 
             <div class="relative pt-datepicker" id="js-filter-dp-div">
                 <div class="dp-inline" id="filter-dp">
-                    <div class="datepicker-input sp-datepicker fl-btn">
-                        <button id="standalone-dp">Dates</button>
-                    </div>
+                    <button class="fl-btn cursor-pointer" id="standalone-dp">Dates</button>
+                    <input type="text" id="js-dp-input" style="display:none;">
                 </div>
             </div>
 
@@ -321,9 +424,20 @@
             </div>
             </div>
         </div>
-        </div>
-
     </div>
+    </div>
+    </div>
+    <div class="datepicker-modal hidden" id="js-datepicker-modal" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999;">
+        <div class="popup-layer" id="dp-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);"></div>
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:white; border-radius:12px; padding:24px; width:720px; max-width:95vw;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="font-size:18px; font-weight:700; color:#0b1833;">When do you want to travel?</h3>
+                <span id="js-dp-close" style="cursor:pointer; font-size:20px;">✕</span>
+            </div>
+            <div id="js-dp-container">
+                <input type="text" id="js-dp-input" style="display:none;">
+            </div>
+        </div>
     </div>
 
     <script>
@@ -434,6 +548,9 @@
     </script>
     <script src="/static/js/redirect.js"></script>
     <script src="/static/js/modal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fecha@4.2.3/lib/fecha.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hotel-datepicker@4.5.0/dist/js/hotel-datepicker.min.js"></script>
+    <script src="/static/js/datepicker.js"></script>
 
 </body>
 </html>

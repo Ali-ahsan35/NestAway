@@ -53,6 +53,14 @@ document.addEventListener("DOMContentLoaded", function () {
       if (urlParams.get('guests')) {
           savedFilters.guests = parseInt(urlParams.get('pax'));
       }
+      if (urlParams.get('checkin')) {
+          savedFilters.checkin = urlParams.get('checkin');
+          window.checkin = savedFilters.checkin;
+      }
+      if (urlParams.get('checkout')) {
+          savedFilters.checkout = urlParams.get('checkout');
+          window.checkout = savedFilters.checkout;
+      }
 
       window.loadProperties(currentCategory, defaultOrder, savedFilters);
     })
@@ -83,6 +91,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (filters.guests && filters.guests > 0) {
         params.set('pax', filters.guests);
     }
+    if (filters.checkin) {
+        params.set('checkin', filters.checkin);
+    }
+    if (filters.checkout) {
+        params.set('checkout', filters.checkout);
+    }
 
     // Update URL without reloading page
     window.history.pushState({}, '', '/refine?' + params.toString());
@@ -110,6 +124,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     if (filters.guests && filters.guests > 0) {
       url += "&pax=" + filters.guests;
+    }
+    if (filters.checkin && filters.checkout) {
+        url += "&checkin=" + filters.checkin + "&checkout=" + filters.checkout;
     }
 
     console.log("Fetching URL:", url);

@@ -153,6 +153,8 @@ document.addEventListener("DOMContentLoaded", function () {
           ? `${minPriceBDT}-${maxPriceBDT}`
           : "",
       guests: guests !== "0" ? guests : "",
+      checkin:     window.checkin  || '',
+      checkout:    window.checkout || ''
     };
 
     console.log("Applying filters:", filters);
