@@ -116,6 +116,13 @@ document.addEventListener("DOMContentLoaded", function () {
     minInput.value = MIN;
     maxInput.value = MAX;
     updateSliderRange();
+
+    window.checkin  = '';
+    window.checkout = '';
+    const modalDp = document.getElementById('modal-datepicker');
+    if (modalDp) modalDp.value = '';
+    const btn = document.getElementById('standalone-dp');
+    if (btn) btn.textContent = 'Dates';
   });
 
   // Apply filter button

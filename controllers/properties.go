@@ -16,27 +16,29 @@ func (c *PropertiesController) Get() {
 	category := c.GetString("category")
 	order := c.GetString("order")
 	amenities := c.GetString("amenities")
-    ecoFriendly := c.GetString("ecoFriendly")
-    // minPrice := c.GetString("minPrice")
-    // maxPrice := c.GetString("maxPrice")
+	ecoFriendly := c.GetString("ecoFriendly")
+	// minPrice := c.GetString("minPrice")
+	// maxPrice := c.GetString("maxPrice")
 	amount := c.GetString("amount")
 	selectedCurrency := c.GetString("selectedCurrency")
-    guests := c.GetString("pax")
+	guests := c.GetString("pax")
+	dateStart := c.GetString("dateStart")
+	dateEnd := c.GetString("dateEnd")
 	if order == "" {
 		order = "1" // default: Most Popular
 	}
 
 	apiURL := "https://presto:TRAV3LA1@ownerdirect.beta.123presto.com/api/properties/category/v1?order=" + order +
-        "&category=" + url.QueryEscape(category) +
-        "&limit=192&items=1&locations=BD&device=desktop&page=1"
+		"&category=" + url.QueryEscape(category) +
+		"&limit=192&items=1&locations=BD&device=desktop&page=1"
 
-	    if amenities != "" {
-        apiURL += "&amenities=" + amenities
-    }
-    if ecoFriendly == "true" {
-        apiURL += "&ecoFriendly=true"
-    }
-    if amount != "" {
+	if amenities != "" {
+		apiURL += "&amenities=" + amenities
+	}
+	if ecoFriendly == "true" {
+		apiURL += "&ecoFriendly=true"
+	}
+	if amount != "" {
 		apiURL += "&amount=" + amount
 		if selectedCurrency != "" {
 			apiURL += "&selectedCurrency=" + selectedCurrency
@@ -44,8 +46,14 @@ func (c *PropertiesController) Get() {
 			apiURL += "&selectedCurrency=BDT"
 		}
 	}
-    if guests != "" {
+	if guests != "" {
 		apiURL += "&pax=" + guests
+	}
+	if dateStart != "" {
+		apiURL += "&dateStart=" + dateStart
+	}
+	if dateEnd != "" {
+		apiURL += "&dateEnd=" + dateEnd
 	}
 
 	req, err := http.NewRequest("GET", apiURL, nil)

@@ -426,7 +426,10 @@
     <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:white; border-radius:12px; padding:24px; width:720px; max-width:95vw;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
             <h3 style="font-size:18px; font-weight:700; color:#0b1833;">When do you want to travel?</h3>
-            <span id="js-dp-close" style="cursor:pointer; font-size:20px;">✕</span>
+            <div style="display:flex; gap:12px; align-items:center;">
+                <button id="js-dp-clear" style="background:none; border:none; color:#ff6b35; font-weight:600; font-size:14px; cursor:pointer;">Clear</button>
+                <span id="js-dp-close" style="cursor:pointer; font-size:20px;">✕</span>
+            </div>
         </div>
         <div id="js-dp-container">
             <input type="text" id="js-dp-input" style="display:none;">

@@ -126,7 +126,8 @@ document.addEventListener("DOMContentLoaded", function () {
       url += "&pax=" + filters.guests;
     }
     if (filters.checkin && filters.checkout) {
-        url += "&checkin=" + filters.checkin + "&checkout=" + filters.checkout;
+        url += "&dateStart=" + filters.checkin + "&dateEnd=" + filters.checkout;
+        console.log("Added dates to URL:", filters.checkin, filters.checkout); 
     }
 
     console.log("Fetching URL:", url);
@@ -148,11 +149,11 @@ document.addEventListener("DOMContentLoaded", function () {
           "filters:",
           filters,
         );
+        console.log("First 5 IDs:", ids.slice(0, 5));
 
         // Limit to first 72 IDs to avoid API limit
         const limitedIds = ids.slice(0, 72);
         const idString = limitedIds.join(",");
-
         return fetch(
           "/api/propertydetails?ids=" + encodeURIComponent(idString),
           {

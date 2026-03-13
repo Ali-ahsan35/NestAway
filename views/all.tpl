@@ -138,6 +138,36 @@
             display: none !important;
         }
 
+        #datepicker-modal-datepicker {
+        background: white !important;
+        border: 1px solid #ddd !important;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15) !important;
+        z-index: 99999 !important;
+        }
+        #datepicker-modal-datepicker .datepicker__inner {
+            background: white !important;
+        }
+        #datepicker-modal-datepicker .datepicker__month {
+            background: white !important;
+            width: auto !important;
+        }
+        #datepicker-modal-datepicker .datepicker__month-day--valid:hover {
+            background: #013573 !important;
+            color: white !important;
+        }
+        #datepicker-modal-datepicker .datepicker__month-day--first-day-selected,
+        #datepicker-modal-datepicker .datepicker__month-day--last-day-selected {
+            background: #013573 !important;
+            color: white !important;
+        }
+        #datepicker-modal-datepicker .datepicker__month-day--selected {
+            background: #e8f0fe !important;
+        }
+        #datepicker-modal-datepicker .datepicker__topbar {
+            background: white !important;
+            border-top: 1px solid #eee !important;
+        }
+
         @media (max-width: 1200px) { .grid { grid-template-columns: repeat(3, 1fr) !important; } }
         @media (max-width: 860px)  { .grid { grid-template-columns: repeat(2, 1fr) !important; } }
         @media (max-width: 520px)  { .grid { grid-template-columns: 1fr !important; } }
@@ -432,7 +462,10 @@
         <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:white; border-radius:12px; padding:24px; width:720px; max-width:95vw;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <h3 style="font-size:18px; font-weight:700; color:#0b1833;">When do you want to travel?</h3>
-                <span id="js-dp-close" style="cursor:pointer; font-size:20px;">✕</span>
+                <div style="display:flex; gap:12px; align-items:center;">
+                    <button id="js-dp-clear" style="background:none; border:none; color:#ff6b35; font-weight:600; font-size:14px; cursor:pointer;">Clear</button>
+                    <span id="js-dp-close" style="cursor:pointer; font-size:20px;">✕</span>
+                </div>
             </div>
             <div id="js-dp-container">
                 <input type="text" id="js-dp-input" style="display:none;">
@@ -541,6 +574,12 @@
             }
             if (filters.guests && filters.guests !== '0') {
                 params.set('pax', filters.guests);
+            }
+            if (filters.checkin) {
+                params.set('dateStart', filters.checkin);
+            }
+            if (filters.checkout) {
+                params.set('dateEnd', filters.checkout);
             }
 
             window.location.href = '/refine?' + params.toString();
