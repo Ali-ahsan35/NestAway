@@ -50,17 +50,57 @@ document.addEventListener("DOMContentLoaded", function () {
       if (urlParams.get('amount')) {
           savedFilters.amount = urlParams.get('amount');
       }
-      if (urlParams.get('guests')) {
+      if (urlParams.get('pax')) {
           savedFilters.guests = parseInt(urlParams.get('pax'));
       }
-      if (urlParams.get('checkin')) {
-          savedFilters.checkin = urlParams.get('checkin');
+      if (urlParams.get('dateStart')) {
+          savedFilters.checkin = urlParams.get('dateStart');
           window.checkin = savedFilters.checkin;
       }
-      if (urlParams.get('checkout')) {
-          savedFilters.checkout = urlParams.get('checkout');
+      if (urlParams.get('dateEnd')) {
+          savedFilters.checkout = urlParams.get('dateEnd');
           window.checkout = savedFilters.checkout;
       }
+
+      if (savedFilters.amenities) {
+          savedFilters.amenities.forEach(id => {
+              const cb = document.getElementById('amenity-' + id);
+              if (cb) cb.checked = true;
+          });
+      }
+      if (savedFilters.ecoFriendly) {
+          const eco = document.getElementById('js-eco-friendly');
+          if (eco) eco.checked = true;
+      }
+      if (urlParams.get('pax')) {
+          const guestCount = document.getElementById('js-guest-count');
+          if (guestCount) guestCount.textContent = urlParams.get('pax');
+      }
+      if (urlParams.get('amount')) {
+          const parts = urlParams.get('amount').split('-');
+          const minBDT = parseInt(parts[0]);
+          const maxBDT = parseInt(parts[1]);
+          const minSlider = document.getElementById('js-min-price-slider');
+          const maxSlider = document.getElementById('js-max-price-slider');
+          const minInput  = document.getElementById('js-min-price');
+          const maxInput  = document.getElementById('js-max-price');
+          if (minSlider) minSlider.value = minBDT;
+          if (maxSlider) maxSlider.value = maxBDT;
+          if (minInput)  minInput.value  = minBDT;
+          if (maxInput)  maxInput.value  = maxBDT;
+          const sliderRange = document.getElementById('js-slider-range');
+          if (sliderRange) {
+              const MIN = 244, MAX = 122096;
+              const leftPct  = ((minBDT - MIN) / (MAX - MIN)) * 100;
+              const widthPct = ((maxBDT - minBDT) / (MAX - MIN)) * 100;
+              sliderRange.style.left  = leftPct + '%';
+              sliderRange.style.width = widthPct + '%';
+          }
+      }
+      console.log("amount from URL:", urlParams.get('amount'));
+      console.log("minSlider found:", document.getElementById('js-min-price-slider'));
+      console.log("guestCount found:", document.getElementById('js-guest-count'));
+      console.log("amenity-1 found:", document.getElementById('amenity-1'));
 
       window.loadProperties(currentCategory, defaultOrder, savedFilters);
     })
@@ -92,10 +132,10 @@ document.addEventListener("DOMContentLoaded", function () {
         params.set('pax', filters.guests);
     }
     if (filters.checkin) {
-        params.set('checkin', filters.checkin);
+        params.set('dateStart', filters.checkin);
     }
     if (filters.checkout) {
-        params.set('checkout', filters.checkout);
+        params.set('dateEnd', filters.checkout);
     }
 
     // Update URL without reloading page
@@ -149,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
           "filters:",
           filters,
         );
-        console.log("First 5 IDs:", ids.slice(0, 5));
+        // console.log("First 5 IDs:", ids.slice(0, 5));
 
         // Limit to first 72 IDs to avoid API limit
         const limitedIds = ids.slice(0, 72);

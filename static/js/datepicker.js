@@ -40,6 +40,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    setTimeout(function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const dateStart = urlParams.get('dateStart');
+        const dateEnd   = urlParams.get('dateEnd');
+        if (dateStart && dateEnd) {
+            window.checkin  = dateStart;
+            window.checkout = dateEnd;
+            const btn = document.getElementById('standalone-dp');
+            if (btn) btn.textContent = dateStart + ' → ' + dateEnd;
+            const modalDpInput = document.getElementById('modal-datepicker');
+            if (modalDpInput) modalDpInput.value = dateStart + ' - ' + dateEnd;
+        }
+    }, 300);
+
+
     function openDatepicker() { modal.classList.remove('hidden'); }
     function closeDatepicker() { modal.classList.add('hidden'); }
     function clearDates() {
@@ -63,20 +78,40 @@ document.addEventListener('DOMContentLoaded', function() {
             e.target.closest('.datepicker__submit-button'))) {
             if (modal && !modal.classList.contains('hidden')) {
                 closeDatepicker();
-                console.log("Submit clicked, checkin:", window.checkin, "checkout:", window.checkout);
                 if (window.loadProperties && window.currentCategory) {
                     const sortEl = document.getElementById('sort-properties');
                     const currentOrder = (sortEl && sortEl.value) ? sortEl.value : '1';
-                    window.loadProperties(window.currentCategory, currentOrder, {
-                        checkin:  window.checkin  || '',
-                        checkout: window.checkout || ''
-                    });
+
+                    // Read existing filters from URL and merge with new dates
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const mergedFilters = {};
+                    if (urlParams.get('amenities')) {
+                        mergedFilters.amenities = urlParams.get('amenities').split('-');
+                    }
+                    if (urlParams.get('ecoFriendly')) {
+                        mergedFilters.ecoFriendly = true;
+                    }
+                    if (urlParams.get('amount')) {
+                        const parts = urlParams.get('amount').split('-');
+                        const minUSD = Math.round(parseInt(parts[0]) / 120);
+                        const maxUSD = Math.round(parseInt(parts[1]) / 120);
+                        mergedFilters.amount    = minUSD + '-' + maxUSD;
+                        mergedFilters.amountBDT = urlParams.get('amount');
+                    }
+                    if (urlParams.get('pax')) {
+                        mergedFilters.guests = parseInt(urlParams.get('pax'));
+                    }
+                    // Override dates with new selection
+                    mergedFilters.checkin  = window.checkin  || '';
+                    mergedFilters.checkout = window.checkout || '';
+
+                    window.loadProperties(window.currentCategory, currentOrder, mergedFilters);
                 }
             }
         }
     });
 
-    // --- INSTANCE 2: Modal datepicker (inside filter modal) ---
+    // INSTANCE 2: Modal datepicker 
     const modalDpInput = document.getElementById('modal-datepicker');
     const calendarIcon = document.querySelector('#modal-dp .calendar-icon');
 
@@ -89,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
             minNights: 1,
             topbarPosition: 'bottom',
             showTopbar: true,
-            submitButton: false,  // ← no submit button
+            submitButton: false,
             onSelectRange: function() {
                 const val   = modalDpInput.value;
                 const parts = val.split(' - ');

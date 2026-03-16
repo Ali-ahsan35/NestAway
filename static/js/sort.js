@@ -30,12 +30,19 @@ sortWrap.querySelectorAll(".select-ul li").forEach((li) => {
             const parts = urlParams.get('amount').split('-');
             const minUSD = Math.round(parseInt(parts[0]) / 120);
             const maxUSD = Math.round(parseInt(parts[1]) / 120);
-            savedFilters.amount = minUSD + '-' + maxUSD;      // USD for API
-            savedFilters.amountBDT = urlParams.get('amount'); // BDT for URL
+            savedFilters.amount = minUSD + '-' + maxUSD;   
+            savedFilters.amountBDT = urlParams.get('amount');
         }
         if (urlParams.get('pax')) {
             savedFilters.guests = parseInt(urlParams.get('pax'));
         }
+        if (urlParams.get('dateStart')) {
+            savedFilters.checkin = urlParams.get('dateStart');
+        }
+        if (urlParams.get('dateEnd')) {
+            savedFilters.checkout = urlParams.get('dateEnd');
+        }
+        console.log("sort savedFilters:", savedFilters);
         window.loadProperties(window.currentCategory, value, savedFilters);
     }
   });
