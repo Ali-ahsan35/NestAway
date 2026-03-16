@@ -16,7 +16,6 @@ type AllController struct {
 
 func (c *AllController) Get() {
 	rawSlug := c.Ctx.Input.Param(":splat")
-	// slug := strings.ToLower(strings.ReplaceAll(rawSlug, "/", ":"))
 
 	apiURL := "http://localhost:8080/api/v1/category/details/" + rawSlug
 
@@ -132,7 +131,6 @@ func (c *AllController) Get() {
 				}
 				sectionMap["ProcessedItems"] = processedSectionItems
 
-				// Replace {{.Location}} in title with location name
 				title, _ := sectionMap["Title"].(string)
 				subTitle, _ := sectionMap["SubTitle"].(string)
 				sectionMap["Title"] = strings.ReplaceAll(title, "{{.Location}}", locationName)
@@ -149,10 +147,6 @@ func (c *AllController) Get() {
 	c.Data["LocationName"] = locationName
 	c.Data["PropertyCount"] = propertyCount
 	c.Data["Breadcrumbs"] = breadcrumbs
-	// c.Data["Items"] = items
 	c.TplName = "all.tpl"
-
-	// Load both templates
-	// beego.ExecuteTemplate(c.Ctx.ResponseWriter, "all.tpl", c.Data)
 
 }

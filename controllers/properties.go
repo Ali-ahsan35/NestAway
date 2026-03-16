@@ -17,8 +17,6 @@ func (c *PropertiesController) Get() {
 	order := c.GetString("order")
 	amenities := c.GetString("amenities")
 	ecoFriendly := c.GetString("ecoFriendly")
-	// minPrice := c.GetString("minPrice")
-	// maxPrice := c.GetString("maxPrice")
 	amount := c.GetString("amount")
 	selectedCurrency := c.GetString("selectedCurrency")
 	guests := c.GetString("pax")

@@ -511,6 +511,7 @@
     <script src="https://cdn.jsdelivr.net/npm/fecha@4.2.3/lib/fecha.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hotel-datepicker@4.5.0/dist/js/hotel-datepicker.min.js"></script>
     <script src="/static/js/datepicker.js"></script>
+    <script src="/static/js/favourite.js"></script>
 
 </body>
 </html>

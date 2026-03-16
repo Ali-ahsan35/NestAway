@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const keyword = window.searchKeyword || "Barcelona, Spain";
   let currentCategory = "";
 
-  // Step 1: breadcrumb — runs once on page load
+  // breadcrumb
   fetch("/api/breadcrumb?keyword=" + encodeURIComponent(keyword), {
     headers: {
       "Content-Type": "application/json",
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("page-subtitle").textContent =
         "Find Your Perfect Stay in " + locationName;
 
-      // Save category globally so sort script can access it
+      // Save category globally
       currentCategory = breadcrumbData?.GeoInfo?.LocationSlug;
       window.currentCategory = currentCategory;
 
@@ -189,7 +189,6 @@ document.addEventListener("DOMContentLoaded", function () {
           "filters:",
           filters,
         );
-        // console.log("First 5 IDs:", ids.slice(0, 5));
 
         // Limit to first 72 IDs to avoid API limit
         const limitedIds = ids.slice(0, 72);
@@ -231,7 +230,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const grid = document.getElementById("grid");
     const count = document.getElementById("result-count");
 
-    // count.textContent = items.length + " properties found";
     grid.innerHTML = "";
 
     if (items.length === 0) {

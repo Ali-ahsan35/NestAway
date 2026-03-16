@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // --- INSTANCE 1: Standalone datepicker (Dates button) ---
+    // Standalone datepicker (Dates button)
     const input = document.getElementById('js-dp-input');
     if (!input) return;
 
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // INSTANCE 2: Modal datepicker 
+    // Modal datepicker 
     const modalDpInput = document.getElementById('modal-datepicker');
     const calendarIcon = document.querySelector('#modal-dp .calendar-icon');
 
