@@ -184,8 +184,8 @@ Browser → NestAway (Go) → 123presto API
 
 | Partner | Feed ID | Logo |
 |---------|---------|------|
-| Booking.com | 12 | `booking.svg` |
-| VRBO | 321 | `vrbo.svg` |
+| Booking.com | 11 | `booking.svg` |
+| VRBO | 12 | `vrbo.svg` |
 | Expedia | 24 | `expedia_v2.svg` |
 
 ---
