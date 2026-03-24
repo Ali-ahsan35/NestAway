@@ -39,7 +39,7 @@
             {{$imgName := index $prop "FeatureImage"}}
             {{if $imgName}}
             <img class="featured-image pt-featured-image"
-                src="https://imgservice.smartours.com/600x600/{{$imgName}}"
+                src="https://imgservice.ownerdirect.com/600x600/{{$imgName}}"
                 alt="{{index $prop "PropertyName"}}">
             {{end}}
             {{$price := index $prop "Price"}}

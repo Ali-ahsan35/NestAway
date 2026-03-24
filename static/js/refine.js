@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const reviews = p?.Counts?.Reviews || 0;
       const imgName = p?.FeatureImage || "";
       const imgUrl = imgName
-        ? "https://imgservice.smartours.com/600x600/" + imgName
+        ? "https://imgservice.ownerdirect.com/600x600/" + imgName
         : null;
       const partnerUrl = partner?.URL || "#";
       const isExpedia = partnerUrl.includes("expedia");
