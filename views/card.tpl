@@ -73,7 +73,7 @@
         <div class="property-title">
             <a title="{{index $prop "PropertyName"}}"
                 target="_blank"
-                href="/property/{{index $prop "PropertySlug"}}/{{$id}}"
+                href="https://presto:TRAV3LA1@ownerdirect.beta.123presto.com/property/{{index $prop "PropertySlug"}}/{{$id}}"
                 class="pt-property-title">
                 {{index $prop "PropertyName"}}
             </a>
