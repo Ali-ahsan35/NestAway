@@ -15,4 +15,5 @@ func init() {
 	beego.Router("/all/*", &controllers.AllController{}, "get:Get")
 	beego.Router("/api/v1/category/details/*", &controllers.CategoryDetailsController{}, "get:Get")
 	beego.Router("/redirect-partner", &controllers.RedirectPartnerController{}, "get:Get")
+	beego.Router("/api/property/images", &controllers.PropertyImagesController{}, "get:Get")
 }
