@@ -1,11 +1,8 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
-	"net/url"
-
+	"smartours/requests"
 	"github.com/beego/beego/v2/server/web"
 )
 
@@ -25,38 +22,12 @@ func (c *RefineController) GetBreadcrumb() {
 
 	c.Data["Keyword"] = keyword
 
-	apiURL := "https://presto:TRAV3LA1@ownerdirect.beta.123presto.com/api/location/v1?keyword=" +
-		url.QueryEscape(keyword) + "&isLocationEntity=true"
-
-	req, err := http.NewRequest("GET", apiURL, nil)
+	result,err:=requests.FetchBreadcrumb(keyword)
 	if err != nil {
-		c.Data["json"] = map[string]string{"error": err.Error()}
-		c.ServeJSON()
-		return
-	}
-
-	// Add headers
-	req.Header.Set("X-Requested-With", "XMLHttpRequest")
-	req.Header.Set("Content-Type", "application/json")
-
-	// Send request
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		c.Data["json"] = map[string]string{"error": err.Error()}
-		c.ServeJSON()
-		return
-	}
-	defer resp.Body.Close()
-
-	var result map[string]interface{}
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	if err != nil {
-		c.Data["json"] = map[string]string{"error": err.Error()}
-		c.ServeJSON()
-		return
-	}
-
+        c.Data["json"] = map[string]string{"error": err.Error()}
+        c.ServeJSON()
+        return
+    }
 	c.Data["json"] = result
 	c.ServeJSON()
 }
