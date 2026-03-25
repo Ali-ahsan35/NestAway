@@ -23,9 +23,6 @@ func FetchCategoryPage(slug string) (CategoryData, error) {
 
     req, err := http.NewRequest("GET", apiURL, nil)
     if err != nil {
-        // c.Data["Error"] = err.Error()
-        // c.Data["Country"] = slug
-        // c.TplName = "all.tpl"
         return CategoryData{},err
     }
 
@@ -33,9 +30,6 @@ func FetchCategoryPage(slug string) (CategoryData, error) {
     resp, err := client.Do(req)
     if err != nil {
         fmt.Println("Error calling our API:", err)
-        // c.Data["Error"] = err.Error()
-        // c.Data["Country"] = slug
-        // c.TplName = "all.tpl"
         return CategoryData{},err
     }
     defer resp.Body.Close()
@@ -46,7 +40,7 @@ func FetchCategoryPage(slug string) (CategoryData, error) {
     var result map[string]interface{}
     json.Unmarshal(bodyBytes, &result)
 
-    // After unmarshaling result, extract the data
+    // extract the data
 	geoInfo, _ := result["GeoInfo"].(map[string]interface{})
 	propertyCount := ""
 	locationName := ""
@@ -64,7 +58,6 @@ func FetchCategoryPage(slug string) (CategoryData, error) {
 		}
 	}
 
-	// After existing geoInfo extraction, add:
 	items := []interface{}{}
 	if result, ok := result["Result"].(map[string]interface{}); ok {
 		if itemsList, ok := result["Items"].([]interface{}); ok {
@@ -72,7 +65,7 @@ func FetchCategoryPage(slug string) (CategoryData, error) {
 		}
 	}
 
-	// Process items to extract first 3 amenities
+	// extract first 3 amenities
 	processedItems := []map[string]interface{}{}
 	for i, item := range items {
 		itemMap, ok := item.(map[string]interface{})
@@ -96,7 +89,6 @@ func FetchCategoryPage(slug string) (CategoryData, error) {
 		processedItems = append(processedItems, itemMap)
 	}
 
-	// After existing items extraction, add:
 	sections := []interface{}{}
 	if resultMap, ok := result["Result"].(map[string]interface{}); ok {
 		if sectionsList, ok := resultMap["Sections"].([]interface{}); ok {
