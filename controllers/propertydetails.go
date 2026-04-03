@@ -12,8 +12,8 @@ type PropertyDetailsController struct {
 
 func (c *PropertyDetailsController) Get() {
 	ids := c.GetString("ids")
-
-	result,err := requests.FetchPropertyDetails(ids)
+	baseURL, _ := beego.AppConfig.String("api_base_url")
+	result,err := requests.FetchPropertyDetails(baseURL,ids)
 	if err != nil {
         c.Data["json"] = map[string]string{"error": err.Error()}
         c.ServeJSON()
@@ -24,9 +24,9 @@ func (c *PropertyDetailsController) Get() {
 	c.ServeJSON()
 }
 
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
+// func min(a, b int) int {
+// 	if a < b {
+// 		return a
+// 	}
+// 	return b
+// }

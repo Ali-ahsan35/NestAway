@@ -24,7 +24,9 @@ func (c *PropertiesController) Get() {
 		order = "1" // default: Most Popular
 	}
 
-	result, err := requests.FetchProperties(requests.PropertyParams{
+	baseURL, _ := beego.AppConfig.String("api_base_url")
+
+	result, err := requests.FetchProperties(baseURL,requests.PropertyParams{
 		Category:         category,
 		Order:            order,
 		Amenities:        amenities,

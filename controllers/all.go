@@ -12,7 +12,9 @@ type AllController struct {
 func (c *AllController) Get() {
 	rawSlug := c.Ctx.Input.Param(":splat")
 
-	data, err := requests.FetchCategoryPage(rawSlug)
+	localURL, _ := beego.AppConfig.String("local_base_url")
+
+	data, err := requests.FetchCategoryPage(localURL,rawSlug)
     if err != nil {
         c.Data["Error"] = err.Error()
         c.Data["Country"] = rawSlug

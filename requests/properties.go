@@ -18,11 +18,10 @@ type PropertyParams struct {
 	DateEnd          string
 }
 
-func FetchProperties(params PropertyParams) (map[string]interface{}, error) {
+func FetchProperties(baseURL string, params PropertyParams) (map[string]interface{}, error) {
 
-	apiURL := "https://presto:TRAV3LA1@ownerdirect.beta.123presto.com/api/properties/category/v1?order=" + params.Order +
-		"&category=" + url.QueryEscape(params.Category) +
-		"&limit=192&items=1&locations=BD&device=desktop&page=1"
+	apiURL := baseURL + "/api/properties/category/v1?order=" + params.Order + "&category=" + url.QueryEscape(params.Category) +
+    "&limit=192&items=1&locations=BD&device=desktop&page=1"
 
 	if params.Amenities != "" {
 		apiURL += "&amenities=" + params.Amenities

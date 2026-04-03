@@ -13,7 +13,9 @@ type BreadcrumbController struct {
 func (c *BreadcrumbController) Get() {
 	keyword := c.GetString("keyword")
 
-	result,err:=requests.FetchBreadcrumb(keyword)
+	baseURL, _ := beego.AppConfig.String("api_base_url")
+
+	result,err:=requests.FetchBreadcrumb(baseURL,keyword)
 	if err != nil {
         c.Data["json"] = map[string]string{"error": err.Error()}
         c.ServeJSON()

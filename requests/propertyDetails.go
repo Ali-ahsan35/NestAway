@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-func FetchPropertyDetails(ids string) (map[string]interface{}, error) {
-	apiURL := "https://presto:TRAV3LA1@ownerdirect.beta.123presto.com/api/property/bookmark/v1?propertyIdList=" + ids
+func FetchPropertyDetails(baseURL string,ids string) (map[string]interface{}, error) {
+	apiURL := baseURL+"/api/property/bookmark/v1?propertyIdList=" + ids
 
 	fmt.Println("PropertyDetails URL:", apiURL[:min(len(apiURL), 200)])
 

@@ -8,8 +8,8 @@ import (
 )
 
 
-func FetchCategoryDetails(slug string) (map[string]interface{}, error) {
-    apiURL := "https://presto:TRAV3LA1@ownerdirect.beta.123presto.com/api/v1/category/details/" + slug +
+func FetchCategoryDetails(baseURL string,slug string) (map[string]interface{}, error) {
+    apiURL := baseURL+"/api/v1/category/details/" + slug +
 		"?aggsAvgPrice=1" +
 		"&aggsAvgRating=1" +
 		"&aggsAvgRoomSize=1" +

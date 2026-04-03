@@ -6,8 +6,8 @@ import (
 	"net/url"
 )
 
-func FetchPropertyImages(propertyId string) (map[string]interface{}, error) {
-	apiURL := "https://presto:TRAV3LA1@ownerdirect.beta.123presto.com/api/property/images/v1?propertyId="+url.QueryEscape(propertyId)
+func FetchPropertyImages(baseURL string,propertyId string) (map[string]interface{}, error) {
+	apiURL := baseURL+"/api/property/images/v1?propertyId="+url.QueryEscape(propertyId)
 	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
 		return nil, err

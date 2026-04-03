@@ -20,8 +20,8 @@ func (c *CategoryDetailsController) Get() {
 		c.ServeJSON()
 		return
 	}
-
-	result, err := requests.FetchCategoryDetails(slug)
+	baseURL, _ := beego.AppConfig.String("api_base_url")
+	result, err := requests.FetchCategoryDetails(baseURL,slug)
 	if err != nil {
         c.Data["json"] = map[string]string{"error": err.Error()}
         c.ServeJSON()

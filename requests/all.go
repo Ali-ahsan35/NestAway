@@ -16,8 +16,8 @@ type CategoryData struct {
     Sections      []interface{}
 }
 
-func FetchCategoryPage(slug string) (CategoryData, error) {
-    apiURL := "http://localhost:8080/api/v1/category/details/" + slug
+func FetchCategoryPage(baseURL string,slug string) (CategoryData, error) {
+     apiURL := baseURL + "/api/v1/category/details/" + slug
 
     fmt.Println("Calling our API:", apiURL)
 
