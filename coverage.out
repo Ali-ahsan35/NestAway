@@ -1,0 +1,27 @@
+mode: set
+smartours/controllers/all.go:13.31,19.16 4 1
+smartours/controllers/all.go:19.16,24.3 4 1
+smartours/controllers/all.go:26.2,32.23 7 1
+smartours/controllers/breadcrumb.go:13.48,18.16 4 1
+smartours/controllers/breadcrumb.go:18.16,22.3 3 1
+smartours/controllers/breadcrumb.go:24.2,25.15 2 1
+smartours/controllers/categorydetails.go:15.43,19.16 3 1
+smartours/controllers/categorydetails.go:19.16,23.3 3 1
+smartours/controllers/categorydetails.go:24.2,26.16 3 1
+smartours/controllers/categorydetails.go:26.16,30.6 3 1
+smartours/controllers/categorydetails.go:32.2,33.15 2 1
+smartours/controllers/properties.go:13.38,23.17 10 1
+smartours/controllers/properties.go:23.17,25.3 1 0
+smartours/controllers/properties.go:27.2,39.16 3 1
+smartours/controllers/properties.go:39.16,43.3 3 1
+smartours/controllers/properties.go:45.2,46.15 2 1
+smartours/controllers/propertydetails.go:14.43,18.16 4 1
+smartours/controllers/propertydetails.go:18.16,22.6 3 1
+smartours/controllers/propertydetails.go:24.2,25.15 2 1
+smartours/controllers/propertyimages.go:14.42,20.16 4 1
+smartours/controllers/propertyimages.go:20.16,24.6 3 1
+smartours/controllers/propertyimages.go:26.2,27.15 2 1
+smartours/controllers/redirectpartner.go:12.43,25.32 10 1
+smartours/controllers/redirectpartner.go:25.32,28.6 2 1
+smartours/controllers/redirectpartner.go:30.5,30.39 1 1
+smartours/controllers/refine.go:14.34,19.2 4 1

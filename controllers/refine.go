@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"fmt"
-	"smartours/requests"
+	// "smartours/requests"
 
 	beego "github.com/beego/beego/v2/server/web"
 )
@@ -18,17 +18,17 @@ func (c *RefineController) Get() {
 	c.TplName = "refine.tpl"
 }
 
-func (c *RefineController) GetBreadcrumb() {
-	keyword := c.GetString("keyword", "Barcelona, Spain")
+// func (c *RefineController) GetBreadcrumb() {
+// 	keyword := c.GetString("keyword", "Barcelona, Spain")
 
-	c.Data["Keyword"] = keyword
-	baseURL, _ := beego.AppConfig.String("api_base_url")
-	result,err:=requests.FetchBreadcrumb(baseURL,keyword)
-	if err != nil {
-        c.Data["json"] = map[string]string{"error": err.Error()}
-        c.ServeJSON()
-        return
-    }
-	c.Data["json"] = result
-	c.ServeJSON()
-}
+// 	c.Data["Keyword"] = keyword
+// 	baseURL, _ := beego.AppConfig.String("api_base_url")
+// 	result,err:=requests.FetchBreadcrumb(baseURL,keyword)
+// 	if err != nil {
+//         c.Data["json"] = map[string]string{"error": err.Error()}
+//         c.ServeJSON()
+//         return
+//     }
+// 	c.Data["json"] = result
+// 	c.ServeJSON()
+// }

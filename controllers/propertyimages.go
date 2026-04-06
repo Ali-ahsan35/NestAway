@@ -8,6 +8,7 @@ import (
 
 type PropertyImagesController struct{
 	beego.Controller
+	Fetcher requests.PropertyImagesFetcher
 }
 
 func (c* PropertyImagesController) Get() {
@@ -15,7 +16,7 @@ func (c* PropertyImagesController) Get() {
 
 	baseURL, _ := beego.AppConfig.String("api_base_url")
 
-	result,err:=requests.FetchPropertyImages(baseURL,propertyId)
+	result,err:=c.Fetcher.FetchPropertyImages(baseURL,propertyId)
 	if err != nil {
         c.Data["json"] = map[string]string{"error": err.Error()}
         c.ServeJSON()
