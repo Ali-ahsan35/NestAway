@@ -2,12 +2,12 @@ package controllers
 
 import (
 	"smartours/requests"
-
 	beego "github.com/beego/beego/v2/server/web"
 )
 
 type PropertiesController struct {
 	beego.Controller
+	Fetcher requests.PropertiesFetcher
 }
 
 func (c *PropertiesController) Get() {
@@ -21,12 +21,11 @@ func (c *PropertiesController) Get() {
 	dateStart := c.GetString("dateStart")
 	dateEnd := c.GetString("dateEnd")
 	if order == "" {
-		order = "1" // default: Most Popular
+		order = "1"
 	}
 
 	baseURL, _ := beego.AppConfig.String("api_base_url")
-
-	result, err := requests.FetchProperties(baseURL,requests.PropertyParams{
+	result, err := c.Fetcher.FetchProperties(baseURL, requests.PropertyParams{
 		Category:         category,
 		Order:            order,
 		Amenities:        amenities,
@@ -38,10 +37,10 @@ func (c *PropertiesController) Get() {
 		DateEnd:          dateEnd,
 	})
 	if err != nil {
-        c.Data["json"] = map[string]string{"error": err.Error()}
-        c.ServeJSON()
-        return
-    }
+		c.Data["json"] = map[string]string{"error": err.Error()}
+		c.ServeJSON()
+		return
+	}
 
 	c.Data["json"] = result
 	c.ServeJSON()
