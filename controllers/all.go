@@ -6,7 +6,8 @@ import (
 )
 
 type AllController struct {
-    beego.Controller
+	beego.Controller
+	Fetcher requests.CategoryPageFetcher
 }
 
 func (c *AllController) Get() {
@@ -14,15 +15,13 @@ func (c *AllController) Get() {
 
 	localURL, _ := beego.AppConfig.String("local_base_url")
 
-	data, err := requests.FetchCategoryPage(localURL,rawSlug)
-    if err != nil {
-        c.Data["Error"] = err.Error()
-        c.Data["Country"] = rawSlug
-        c.TplName = "all.tpl"
-        return
-    }
-
-	
+	data, err := c.Fetcher.FetchCategoryPage(localURL, rawSlug)
+	if err != nil {
+		c.Data["Error"] = err.Error()
+		c.Data["Country"] = rawSlug
+		c.TplName = "all.tpl"
+		return
+	}
 
 	c.Data["Sections"] = data.Sections
 	c.Data["Items"] = data.Items
@@ -31,5 +30,4 @@ func (c *AllController) Get() {
 	c.Data["PropertyCount"] = data.PropertyCount
 	c.Data["Breadcrumbs"] = data.Breadcrumbs
 	c.TplName = "all.tpl"
-
 }
