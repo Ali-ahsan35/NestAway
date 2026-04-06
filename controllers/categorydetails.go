@@ -9,6 +9,7 @@ import (
 
 type CategoryDetailsController struct {
 	beego.Controller
+	Fetcher requests.CategoryDetailsFetcher
 }
 
 func (c *CategoryDetailsController) Get() {
@@ -21,7 +22,7 @@ func (c *CategoryDetailsController) Get() {
 		return
 	}
 	baseURL, _ := beego.AppConfig.String("api_base_url")
-	result, err := requests.FetchCategoryDetails(baseURL,slug)
+	result, err := c.Fetcher.FetchCategoryDetails(baseURL,slug)
 	if err != nil {
         c.Data["json"] = map[string]string{"error": err.Error()}
         c.ServeJSON()
