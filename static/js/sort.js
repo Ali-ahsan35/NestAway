@@ -26,12 +26,22 @@ sortWrap.querySelectorAll(".select-ul li").forEach((li) => {
             savedFilters.ecoFriendly = true;
         }
         if (urlParams.get('amount')) {
-            // amount in URL is BDT — convert to USD for API
+          const selectedCode = urlParams.get('selectedCurrency') || (window.CurrencyManager && window.CurrencyManager.getCurrentCurrency ? window.CurrencyManager.getCurrentCurrency().code : 'USD');
+          let rate = 1;
+          if (window.CurrencyManager && window.CurrencyManager.getCurrencyByCode) {
+            const byCode = window.CurrencyManager.getCurrencyByCode(selectedCode);
+            if (byCode) {
+              rate = Number(byCode.rate) || 1;
+            }
+          }
+
+          // amount in URL is display currency — convert to USD for API.
             const parts = urlParams.get('amount').split('-');
-            const minUSD = Math.round(parseInt(parts[0]) / 120);
-            const maxUSD = Math.round(parseInt(parts[1]) / 120);
+          const minUSD = Math.round(parseInt(parts[0], 10) / rate);
+          const maxUSD = Math.round(parseInt(parts[1], 10) / rate);
             savedFilters.amount = minUSD + '-' + maxUSD;   
-            savedFilters.amountBDT = urlParams.get('amount');
+          savedFilters.amountDisplay = urlParams.get('amount');
+          savedFilters.selectedCurrency = selectedCode;
         }
         if (urlParams.get('pax')) {
             savedFilters.guests = parseInt(urlParams.get('pax'));

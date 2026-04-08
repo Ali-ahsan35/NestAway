@@ -6,6 +6,8 @@
     
     <link rel="stylesheet" type="text/css" href="https://cdn.123presto.com/prod/static/css/hotel-datepicker-1.1.83.css"/>
     <link rel="stylesheet" href="/static/css/variables.css">
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <link rel="stylesheet" href="/static/css/footer.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.123presto.com/prod/static/css/global-1.1.80.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.123presto.com/prod/static/css/refine-1.1.80.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.123presto.com/prod/static/css/tile-1.1.80.css"/>
@@ -187,6 +189,7 @@
     </style>
 </head>
 <body>
+    {{template "navbar.tpl" .}}
 
     <div class="breadcrumb-share">
         <div class="refine-breadcrumb" id="js-breadcrumb">
@@ -486,8 +489,13 @@
         </div>
     </div>
 
+    {{template "footer.tpl" .}}
+
     <script src="/static/js/redirect.js"></script>
     <script src="/static/js/modal.js"></script>
+    <script src="/static/js/currency.js"></script>
+    <script src="/static/js/navbar.js"></script>
+    <script src="/static/js/footer.js"></script>
     <script>
         window.locationName = "{{.LocationName}}";
         window.currentCategory = "{{.Country}}";
@@ -504,9 +512,9 @@
             if (filters.ecoFriendly) {
                 params.set('ecoFriendly', 'true');
             }
-            if (filters.amountBDT) {
-                params.set('amount', filters.amountBDT);
-                params.set('selectedCurrency', 'BDT');
+            if (filters.amount) {
+                params.set('amount', filters.amountDisplay || filters.amount);
+                params.set('selectedCurrency', filters.selectedCurrency || 'USD');
             }
             if (filters.guests && filters.guests !== '0') {
                 params.set('pax', filters.guests);

@@ -34,7 +34,7 @@ func FetchProperties(baseURL string, params PropertyParams) (map[string]interfac
 		if params.SelectedCurrency != "" {
 			apiURL += "&selectedCurrency=" + params.SelectedCurrency
 		} else {
-			apiURL += "&selectedCurrency=BDT"
+			apiURL += "&selectedCurrency=USD"
 		}
 	}
 	if params.Guests != "" {

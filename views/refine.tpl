@@ -7,6 +7,8 @@
 
 
     <link rel="stylesheet" href="/static/css/variables.css">
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <link rel="stylesheet" href="/static/css/footer.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.123presto.com/prod/static/css/hotel-datepicker-1.1.83.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.123presto.com/prod/static/css/global-1.1.80.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.123presto.com/prod/static/css/refine-1.1.80.css"/>
@@ -153,6 +155,7 @@
     </style>
 </head>
 <body>
+{{template "navbar.tpl" .}}
 
 <!-- HEADER -->
 <div class="header">
@@ -449,12 +452,17 @@
         </div>
     </div>
 </div>
+    {{template "footer.tpl" .}}
+
     <script>window.searchKeyword = "{{.Keyword}}";</script>
+    <script src="/static/js/currency.js"></script>
     <script src="/static/js/refine.js"></script>
     <script src="/static/js/sort.js"></script>
     <script src="/static/js/modal.js"></script>
     <script src="/static/js/redirect.js"></script>
     <script src="/static/js/favourite.js"></script>
+    <script src="/static/js/navbar.js"></script>
+    <script src="/static/js/footer.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const observer = new MutationObserver(function() {

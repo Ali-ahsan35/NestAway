@@ -7,9 +7,8 @@ import (
 	"net/http"
 )
 
-
-func FetchCategoryDetails(baseURL string,slug string) (map[string]interface{}, error) {
-    apiURL := baseURL+"/api/v1/category/details/" + slug +
+func FetchCategoryDetails(baseURL string, slug string) (map[string]interface{}, error) {
+	apiURL := baseURL + "/api/v1/category/details/" + slug +
 		"?aggsAvgPrice=1" +
 		"&aggsAvgRating=1" +
 		"&aggsAvgRoomSize=1" +

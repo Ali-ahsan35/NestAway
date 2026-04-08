@@ -44,8 +44,8 @@
             {{end}}
             {{$price := index $prop "Price"}}
             {{if $price}}
-            <span class="property-price js-price-value">
-                From BD ৳ {{printf "%.0f" (mul $price 120.0)}}
+            <span class="property-price js-price-value" data-base-usd="{{printf "%.2f" $price}}" data-price-prefix="From " data-price-suffix="">
+                From US $ {{printf "%.0f" $price}}
             </span>
             {{end}}
         </a>

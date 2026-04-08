@@ -1,4 +1,27 @@
 document.addEventListener("DOMContentLoaded", function () {
+  function getCurrency() {
+    if (window.CurrencyManager && window.CurrencyManager.getCurrentCurrency) {
+      return window.CurrencyManager.getCurrentCurrency();
+    }
+    return { code: "USD", symbol: "US $", rate: 1 };
+  }
+
+  function getBounds() {
+    const rate = Number(getCurrency().rate) || 1;
+    return {
+      min: Math.round(2 * rate),
+      max: Math.round(1000 * rate),
+      step: Math.max(1, Math.round(rate)),
+    };
+  }
+
+  function updateCurrencyIcons() {
+    const symbol = getCurrency().symbol;
+    document.querySelectorAll(".currency-icon").forEach((el) => {
+      el.textContent = symbol;
+    });
+  }
+
   // Open modal
   function openFilterModal() {
     document.getElementById("js-filter").classList.remove("hidden");
@@ -43,19 +66,39 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Price slider logic
-  const MIN = 244;
-  const MAX = 122096;
   const minSlider = document.getElementById("js-min-price-slider");
   const maxSlider = document.getElementById("js-max-price-slider");
   const minInput = document.getElementById("js-min-price");
   const maxInput = document.getElementById("js-max-price");
   const sliderRange = document.getElementById("js-slider-range");
 
+  function syncPriceBounds(resetToLimits) {
+    const bounds = getBounds();
+    minSlider.min = bounds.min;
+    minSlider.max = bounds.max;
+    minSlider.step = bounds.step;
+    maxSlider.min = bounds.min;
+    maxSlider.max = bounds.max;
+    maxSlider.step = bounds.step;
+    minInput.min = bounds.min;
+    minInput.max = bounds.max;
+    maxInput.min = bounds.min;
+    maxInput.max = bounds.max;
+
+    if (resetToLimits) {
+      minSlider.value = bounds.min;
+      maxSlider.value = bounds.max;
+      minInput.value = bounds.min;
+      maxInput.value = bounds.max;
+    }
+  }
+
   function updateSliderRange() {
+    const bounds = getBounds();
     const minVal = parseInt(minSlider.value);
     const maxVal = parseInt(maxSlider.value);
-    const leftPct = ((minVal - MIN) / (MAX - MIN)) * 100;
-    const widthPct = ((maxVal - minVal) / (MAX - MIN)) * 100;
+    const leftPct = ((minVal - bounds.min) / (bounds.max - bounds.min)) * 100;
+    const widthPct = ((maxVal - minVal) / (bounds.max - bounds.min)) * 100;
     sliderRange.style.left = leftPct + "%";
     sliderRange.style.width = widthPct + "%";
   }
@@ -63,8 +106,9 @@ document.addEventListener("DOMContentLoaded", function () {
   minSlider.addEventListener("input", () => {
     let minVal = parseInt(minSlider.value);
     let maxVal = parseInt(maxSlider.value);
+    const bounds = getBounds();
     if (minVal >= maxVal) {
-      minVal = maxVal - 100;
+      minVal = maxVal - bounds.step;
       minSlider.value = minVal;
     }
     minInput.value = minVal;
@@ -74,8 +118,9 @@ document.addEventListener("DOMContentLoaded", function () {
   maxSlider.addEventListener("input", () => {
     let minVal = parseInt(minSlider.value);
     let maxVal = parseInt(maxSlider.value);
+    const bounds = getBounds();
     if (maxVal <= minVal) {
-      maxVal = minVal + 100;
+      maxVal = minVal + bounds.step;
       maxSlider.value = maxVal;
     }
     maxInput.value = maxVal;
@@ -83,26 +128,30 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   minInput.addEventListener("input", () => {
-    let minVal = parseInt(minInput.value) || MIN;
+    const bounds = getBounds();
+    let minVal = parseInt(minInput.value) || bounds.min;
     let maxVal = parseInt(maxInput.value);
-    if (minVal < MIN) minVal = MIN;
-    if (minVal >= maxVal) minVal = maxVal - 100;
+    if (minVal < bounds.min) minVal = bounds.min;
+    if (minVal >= maxVal) minVal = maxVal - bounds.step;
     minInput.value = minVal;
     minSlider.value = minVal;
     updateSliderRange();
   });
 
   maxInput.addEventListener("input", () => {
-    let maxVal = parseInt(maxInput.value) || MAX;
+    const bounds = getBounds();
+    let maxVal = parseInt(maxInput.value) || bounds.max;
     let minVal = parseInt(minInput.value);
-    if (maxVal > MAX) maxVal = MAX;
-    if (maxVal <= minVal) maxVal = minVal + 100;
+    if (maxVal > bounds.max) maxVal = bounds.max;
+    if (maxVal <= minVal) maxVal = minVal + bounds.step;
     maxInput.value = maxVal;
     maxSlider.value = maxVal;
     updateSliderRange();
   });
 
   // Initialize slider on page load
+  updateCurrencyIcons();
+  syncPriceBounds(true);
   updateSliderRange();
 
   // Clear button — resets everything
@@ -111,10 +160,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .querySelectorAll("#js-filter input[type=checkbox]")
       .forEach((cb) => (cb.checked = false));
     guestCount.textContent = "0";
-    minSlider.value = MIN;
-    maxSlider.value = MAX;
-    minInput.value = MIN;
-    maxInput.value = MAX;
+    syncPriceBounds(true);
     updateSliderRange();
 
     window.checkin  = '';
@@ -140,25 +186,28 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const ecoFriendly = document.getElementById("js-eco-friendly").checked;
-    const minPriceBDT = parseInt(minInput.value) || MIN;
-    const maxPriceBDT = parseInt(maxInput.value) || MAX;
+    const bounds = getBounds();
+    const currency = getCurrency();
+    const minPriceDisplay = parseInt(minInput.value) || bounds.min;
+    const maxPriceDisplay = parseInt(maxInput.value) || bounds.max;
     const guests = guestCount.textContent;
 
-    // Convert BDT to USD for API
-    const minPriceUSD = Math.round(minPriceBDT / 120);
-    const maxPriceUSD = Math.round(maxPriceBDT / 120);
+    // Convert selected display currency to USD for API.
+    const minPriceUSD = Math.round(minPriceDisplay / currency.rate);
+    const maxPriceUSD = Math.round(maxPriceDisplay / currency.rate);
 
     const filters = {
       amenities: [...new Set(checkedAmenities)],
       ecoFriendly: ecoFriendly,
       amount:
-        minPriceBDT > MIN || maxPriceBDT < MAX
+        minPriceDisplay > bounds.min || maxPriceDisplay < bounds.max
           ? `${minPriceUSD}-${maxPriceUSD}`
           : "",
-      amountBDT:
-        minPriceBDT > MIN || maxPriceBDT < MAX
-          ? `${minPriceBDT}-${maxPriceBDT}`
+      amountDisplay:
+        minPriceDisplay > bounds.min || maxPriceDisplay < bounds.max
+          ? `${minPriceDisplay}-${maxPriceDisplay}`
           : "",
+      selectedCurrency: currency.code,
       guests: guests !== "0" ? guests : "",
       checkin:     window.checkin  || '',
       checkout:    window.checkout || ''
@@ -172,5 +221,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const currentOrder = (sortEl && sortEl.value) ? sortEl.value : '1';
       window.loadProperties(window.currentCategory, currentOrder, filters);
     }
+  });
+
+  window.addEventListener("currency:changed", function () {
+    updateCurrencyIcons();
+    syncPriceBounds(true);
+    updateSliderRange();
   });
 });

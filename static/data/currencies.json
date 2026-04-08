@@ -1,0 +1,17 @@
+{
+    "AE": { "Code": "AED", "Country": "AE", "Symbol": "AE .د.إ", "Rate": 3.67302 },
+    "AU": { "Code": "AUD", "Country": "AU", "Symbol": "AU $", "Rate": 1.44759 },
+    "BD": { "Code": "BDT", "Country": "BD", "Symbol": "BD ৳", "Rate": 122.428639 },
+    "BE": { "Code": "EUR", "Country": "BE", "Symbol": "EU €", "Rate": 0.867312 },
+    "CA": { "Code": "CAD", "Country": "CA", "Symbol": "CA $", "Rate": 1.392532 },
+    "DE": { "Code": "EUR", "Country": "DE", "Symbol": "EU €", "Rate": 0.867312 },
+    "ES": { "Code": "EUR", "Country": "ES", "Symbol": "EU €", "Rate": 0.867312 },
+    "FR": { "Code": "EUR", "Country": "FR", "Symbol": "EU €", "Rate": 0.867312 },
+    "GB": { "Code": "GBP", "Country": "GB", "Symbol": "GB £", "Rate": 0.756562 },
+    "IE": { "Code": "GBP", "Country": "IE", "Symbol": "GB £", "Rate": 0.756562 },
+    "IT": { "Code": "EUR", "Country": "IT", "Symbol": "EU €", "Rate": 0.867312 },
+    "SG": { "Code": "SGD", "Country": "SG", "Symbol": "SG $", "Rate": 1.286503 },
+    "UK": { "Code": "GBP", "Country": "UK", "Symbol": "GB £", "Rate": 0.756562 },
+    "US": { "Code": "USD", "Country": "US", "Symbol": "US $", "Rate": 1 },
+    "ZA": { "Code": "ZAR", "Country": "ZA", "Symbol": "ZA R", "Rate": 16.9167 }
+}

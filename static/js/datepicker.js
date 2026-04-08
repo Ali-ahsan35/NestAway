@@ -92,11 +92,21 @@ document.addEventListener('DOMContentLoaded', function() {
                         mergedFilters.ecoFriendly = true;
                     }
                     if (urlParams.get('amount')) {
+                        const selectedCode = urlParams.get('selectedCurrency') || (window.CurrencyManager && window.CurrencyManager.getCurrentCurrency ? window.CurrencyManager.getCurrentCurrency().code : 'USD');
+                        let rate = 1;
+                        if (window.CurrencyManager && window.CurrencyManager.getCurrencyByCode) {
+                            const byCode = window.CurrencyManager.getCurrencyByCode(selectedCode);
+                            if (byCode) {
+                                rate = Number(byCode.rate) || 1;
+                            }
+                        }
+
                         const parts = urlParams.get('amount').split('-');
-                        const minUSD = Math.round(parseInt(parts[0]) / 120);
-                        const maxUSD = Math.round(parseInt(parts[1]) / 120);
+                        const minUSD = Math.round(parseInt(parts[0], 10) / rate);
+                        const maxUSD = Math.round(parseInt(parts[1], 10) / rate);
                         mergedFilters.amount    = minUSD + '-' + maxUSD;
-                        mergedFilters.amountBDT = urlParams.get('amount');
+                        mergedFilters.amountDisplay = urlParams.get('amount');
+                        mergedFilters.selectedCurrency = selectedCode;
                     }
                     if (urlParams.get('pax')) {
                         mergedFilters.guests = parseInt(urlParams.get('pax'));

@@ -2,6 +2,48 @@ document.addEventListener("DOMContentLoaded", function () {
   const keyword = window.searchKeyword || "Barcelona, Spain";
   let currentCategory = "";
 
+  function currentCurrency() {
+    if (window.CurrencyManager && window.CurrencyManager.getCurrentCurrency) {
+      return window.CurrencyManager.getCurrentCurrency();
+    }
+    return { code: "USD", symbol: "US $", rate: 1 };
+  }
+
+  function displayBounds() {
+    const rate = Number(currentCurrency().rate) || 1;
+    return {
+      min: Math.round(2 * rate),
+      max: Math.round(1000 * rate),
+    };
+  }
+
+  function parseAmountToUSD(amountText, codeFromUrl) {
+    if (!amountText) {
+      return "";
+    }
+    const parts = amountText.split("-");
+    if (parts.length !== 2) {
+      return "";
+    }
+    const minDisplay = parseInt(parts[0], 10);
+    const maxDisplay = parseInt(parts[1], 10);
+    if (!Number.isFinite(minDisplay) || !Number.isFinite(maxDisplay)) {
+      return "";
+    }
+
+    let rate = Number(currentCurrency().rate) || 1;
+    if (window.CurrencyManager && codeFromUrl) {
+      const byCode = window.CurrencyManager.getCurrencyByCode(codeFromUrl);
+      if (byCode) {
+        rate = Number(byCode.rate) || 1;
+      }
+    }
+
+    const minUSD = Math.round(minDisplay / rate);
+    const maxUSD = Math.round(maxDisplay / rate);
+    return minUSD + "-" + maxUSD;
+  }
+
   // breadcrumb
   fetch("/api/breadcrumb?keyword=" + encodeURIComponent(keyword), {
     headers: {
@@ -48,7 +90,9 @@ document.addEventListener("DOMContentLoaded", function () {
           savedFilters.ecoFriendly = true;
       }
       if (urlParams.get('amount')) {
-          savedFilters.amount = urlParams.get('amount');
+          savedFilters.amountDisplay = urlParams.get('amount');
+          savedFilters.selectedCurrency = urlParams.get('selectedCurrency') || currentCurrency().code;
+          savedFilters.amount = parseAmountToUSD(savedFilters.amountDisplay, savedFilters.selectedCurrency);
       }
       if (urlParams.get('pax')) {
           savedFilters.guests = parseInt(urlParams.get('pax'));
@@ -78,21 +122,21 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       if (urlParams.get('amount')) {
           const parts = urlParams.get('amount').split('-');
-          const minBDT = parseInt(parts[0]);
-          const maxBDT = parseInt(parts[1]);
+          const minDisplay = parseInt(parts[0], 10);
+          const maxDisplay = parseInt(parts[1], 10);
           const minSlider = document.getElementById('js-min-price-slider');
           const maxSlider = document.getElementById('js-max-price-slider');
           const minInput  = document.getElementById('js-min-price');
           const maxInput  = document.getElementById('js-max-price');
-          if (minSlider) minSlider.value = minBDT;
-          if (maxSlider) maxSlider.value = maxBDT;
-          if (minInput)  minInput.value  = minBDT;
-          if (maxInput)  maxInput.value  = maxBDT;
+          if (minSlider) minSlider.value = minDisplay;
+          if (maxSlider) maxSlider.value = maxDisplay;
+          if (minInput)  minInput.value  = minDisplay;
+          if (maxInput)  maxInput.value  = maxDisplay;
           const sliderRange = document.getElementById('js-slider-range');
           if (sliderRange) {
-              const MIN = 244, MAX = 122096;
-              const leftPct  = ((minBDT - MIN) / (MAX - MIN)) * 100;
-              const widthPct = ((maxBDT - minBDT) / (MAX - MIN)) * 100;
+            const bounds = displayBounds();
+            const leftPct  = ((minDisplay - bounds.min) / (bounds.max - bounds.min)) * 100;
+            const widthPct = ((maxDisplay - minDisplay) / (bounds.max - bounds.min)) * 100;
               sliderRange.style.left  = leftPct + '%';
               sliderRange.style.width = widthPct + '%';
           }
@@ -124,9 +168,9 @@ document.addEventListener("DOMContentLoaded", function () {
         params.set('ecoFriendly', 'true');
     }
     if (filters.amount) {
-    // Use BDT amount in URL if available, otherwise use amount as-is
-    params.set('amount', filters.amountBDT || filters.amount);
-    params.set('selectedCurrency', 'BDT');
+    // URL keeps display currency amount for shareability.
+    params.set('amount', filters.amountDisplay || filters.amount);
+    params.set('selectedCurrency', filters.selectedCurrency || currentCurrency().code);
     }
     if (filters.guests && filters.guests > 0) {
         params.set('pax', filters.guests);
@@ -160,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
       url += "&ecoFriendly=true";
     }
     if (filters.amount) {
-        url += "&amount=" + filters.amount + "&selectedCurrency=BDT";
+      url += "&amount=" + filters.amount + "&selectedCurrency=" + encodeURIComponent(filters.selectedCurrency || currentCurrency().code);
     }
     if (filters.guests && filters.guests > 0) {
       url += "&pax=" + filters.guests;
@@ -244,9 +288,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const id = item.ID || "";
       const name = p?.PropertyName || "Unnamed Property";
       const type = p?.PropertyType || "";
-      const price = p?.Price
-        ? Math.round(p.Price * 120).toLocaleString()
-        : null;
+      const priceUsd = Number(p?.Price);
+      const hasPrice = Number.isFinite(priceUsd);
       const rating = p?.ReviewScore ? p.ReviewScore.toFixed(1) : null;
       const reviews = p?.Counts?.Reviews || 0;
       const imgName = p?.FeatureImage || "";
@@ -317,8 +360,8 @@ document.addEventListener("DOMContentLoaded", function () {
                             : `<div class="featured-image pt-featured-image" style="background:#e8eef5;display:flex;align-items:center;justify-content:center;font-size:36px;">🏠</div>`
                         }
                         ${
-                          price
-                            ? `<span class="property-price js-price-value">From BD ৳ ${price}</span>`
+                          hasPrice
+                            ? `<span class="property-price js-price-value" data-base-usd="${priceUsd}" data-price-prefix="From " data-price-suffix="">From US $ ${Math.round(priceUsd).toLocaleString()}</span>`
                             : ""
                         }
                     </a>
@@ -389,14 +432,12 @@ document.addEventListener("DOMContentLoaded", function () {
                             View Availability
                         </a>
                         ${
-                          price
-                            ? `
-                        <span class="list-tile-price property-price js-price-value">
-                            <span class="pt-from">From</span>
-                            BD ৳ ${price}
-                            <span class="pt-per-night">/ night</span>
+                          hasPrice
+                          ? `
+                        <span class="list-tile-price property-price js-price-value" data-base-usd="${priceUsd}" data-price-prefix="From " data-price-suffix=" / night">
+                          From US $ ${Math.round(priceUsd).toLocaleString()} / night
                         </span>`
-                            : ""
+                          : ""
                         }
                     </div>
                 </div>
@@ -407,5 +448,15 @@ document.addEventListener("DOMContentLoaded", function () {
     if (typeof initImageSlider === 'function') {
         initImageSlider();
     }
+    if (window.CurrencyManager && window.CurrencyManager.applyCurrencyToDom) {
+      window.CurrencyManager.applyCurrencyToDom(grid);
+    }
   }
+
+  window.addEventListener("currency:changed", function () {
+    const grid = document.getElementById("grid");
+    if (window.CurrencyManager && window.CurrencyManager.applyCurrencyToDom && grid) {
+      window.CurrencyManager.applyCurrencyToDom(grid);
+    }
+  });
 });
