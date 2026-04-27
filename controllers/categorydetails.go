@@ -15,6 +15,8 @@ type CategoryDetailsController struct {
 func (c *CategoryDetailsController) Get() {
 	rawSlug := c.Ctx.Input.Param(":splat")
 	slug := strings.ToLower(strings.ReplaceAll(rawSlug, "/", ":"))
+	pt := strings.TrimSpace(c.GetString("pt"))
+	limit := strings.TrimSpace(c.GetString("limit"))
 
 	if slug == "" {
 		c.Data["json"] = map[string]string{"error": "country is required"}
@@ -22,12 +24,12 @@ func (c *CategoryDetailsController) Get() {
 		return
 	}
 	baseURL, _ := beego.AppConfig.String("api_base_url")
-	result, err := c.Fetcher.FetchCategoryDetails(baseURL,slug)
+	result, err := c.Fetcher.FetchCategoryDetails(baseURL, slug, pt, limit)
 	if err != nil {
-        c.Data["json"] = map[string]string{"error": err.Error()}
-        c.ServeJSON()
-        return
-    }
+		c.Data["json"] = map[string]string{"error": err.Error()}
+		c.ServeJSON()
+		return
+	}
 
 	c.Data["json"] = result
 	c.ServeJSON()

@@ -18,6 +18,9 @@ func init() {
 	beego.Router("/api/propertydetails", &controllers.PropertyDetailsController{
 		Fetcher: &requests.PropertyDetailsFetcherImpl{},
 	}, "get:Get")
+	beego.Router("/all/*/:propertyType", &controllers.AllByPropertyTypeController{
+		Fetcher: &requests.CategoryPageByTypeFetcherImpl{},
+	}, "get:Get")
 	beego.Router("/all/*", &controllers.AllController{
 		Fetcher: &requests.CategoryPageFetcherImpl{},
 	}, "get:Get")

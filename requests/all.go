@@ -9,38 +9,100 @@ import (
 )
 
 type CategoryData struct {
-    LocationName  string
-    PropertyCount string
-    Breadcrumbs   []interface{}
-    Items         []map[string]interface{}
-    Sections      []interface{}
+	LocationName  string
+	PropertyCount string
+	Breadcrumbs   []interface{}
+	Items         []map[string]interface{}
+	Sections      []interface{}
 }
 
-func FetchCategoryPage(baseURL string,slug string) (CategoryData, error) {
-     apiURL := baseURL + "/api/v1/category/details/" + slug
+func FetchCategoryPage(baseURL string, slug string) (CategoryData, error) {
+	apiURL := baseURL + "/api/v1/category/details/" + slug
+	return fetchCategoryPageByURL(apiURL)
+}
 
-    fmt.Println("Calling our API:", apiURL)
+func FetchCategoryPageWithType(baseURL string, slug string, pt int) (CategoryData, error) {
+	apiURL := fmt.Sprintf("%s/api/v1/category/details/%s?pt=%d&limit=24", baseURL, slug, pt)
+	data, err := fetchCategoryPageByURL(apiURL)
+	if err != nil {
+		return CategoryData{}, err
+	}
 
-    req, err := http.NewRequest("GET", apiURL, nil)
-    if err != nil {
-        return CategoryData{},err
-    }
+	if len(data.Items) < 24 {
+		data.Items = fillItemsFromSections(data.Items, data.Sections, 24)
+	}
 
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    if err != nil {
-        fmt.Println("Error calling our API:", err)
-        return CategoryData{},err
-    }
-    defer resp.Body.Close()
+	return data, nil
+}
 
-    bodyBytes, _ := io.ReadAll(resp.Body)
-    fmt.Println("Our API status:", resp.StatusCode)
+func fillItemsFromSections(items []map[string]interface{}, sections []interface{}, target int) []map[string]interface{} {
+	if len(items) >= target || len(sections) == 0 {
+		return items
+	}
 
-    var result map[string]interface{}
-    json.Unmarshal(bodyBytes, &result)
+	seen := map[string]struct{}{}
+	for _, item := range items {
+		if id, ok := item["ID"].(string); ok && id != "" {
+			seen[id] = struct{}{}
+		}
+	}
 
-    // extract the data
+	merged := append([]map[string]interface{}{}, items...)
+	for _, sec := range sections {
+		sectionMap, ok := sec.(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		processedItems, ok := sectionMap["ProcessedItems"].([]map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		for _, item := range processedItems {
+			if len(merged) >= target {
+				return merged
+			}
+
+			id, _ := item["ID"].(string)
+			if id != "" {
+				if _, exists := seen[id]; exists {
+					continue
+				}
+				seen[id] = struct{}{}
+			}
+
+			merged = append(merged, item)
+		}
+	}
+
+	return merged
+}
+
+func fetchCategoryPageByURL(apiURL string) (CategoryData, error) {
+
+	fmt.Println("Calling our API:", apiURL)
+
+	req, err := http.NewRequest("GET", apiURL, nil)
+	if err != nil {
+		return CategoryData{}, err
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error calling our API:", err)
+		return CategoryData{}, err
+	}
+	defer resp.Body.Close()
+
+	bodyBytes, _ := io.ReadAll(resp.Body)
+	fmt.Println("Our API status:", resp.StatusCode)
+
+	var result map[string]interface{}
+	json.Unmarshal(bodyBytes, &result)
+
+	// extract the data
 	geoInfo, _ := result["GeoInfo"].(map[string]interface{})
 	propertyCount := ""
 	locationName := ""

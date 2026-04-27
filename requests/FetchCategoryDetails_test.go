@@ -23,7 +23,7 @@ func TestFetchCategoryDetails_Success(t *testing.T) {
 	}))
 	defer fakeServer.Close()
 
-	result, err := FetchCategoryDetails(fakeServer.URL, "spain:catalonia:barcelona")
+	result, err := FetchCategoryDetails(fakeServer.URL, "spain:catalonia:barcelona", "", "")
 
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
@@ -37,7 +37,7 @@ func TestFetchCategoryDetails_APIError(t *testing.T) {
 	}))
 	defer fakeServer.Close()
 
-	result, err := FetchCategoryDetails(fakeServer.URL, "spain:catalonia:barcelona")
+	result, err := FetchCategoryDetails(fakeServer.URL, "spain:catalonia:barcelona", "", "")
 
 	assert.NoError(t, err)
 	assert.Nil(t, result)
@@ -50,8 +50,34 @@ func TestFetchCategoryDetails_EmptySlug(t *testing.T) {
 	}))
 	defer fakeServer.Close()
 
-	result, err := FetchCategoryDetails(fakeServer.URL, "")
+	result, err := FetchCategoryDetails(fakeServer.URL, "", "", "")
 
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
+}
+
+func TestFetchCategoryDetails_WithPT(t *testing.T) {
+	fakeServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "7", r.URL.Query().Get("pt"))
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]interface{}{})
+	}))
+	defer fakeServer.Close()
+
+	_, err := FetchCategoryDetails(fakeServer.URL, "usa", "7", "")
+
+	assert.NoError(t, err)
+}
+
+func TestFetchCategoryDetails_WithLimit(t *testing.T) {
+	fakeServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "24", r.URL.Query().Get("limit"))
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]interface{}{})
+	}))
+	defer fakeServer.Close()
+
+	_, err := FetchCategoryDetails(fakeServer.URL, "usa", "7", "24")
+
+	assert.NoError(t, err)
 }

@@ -22,7 +22,7 @@ func TestCategoryDetailsController_Success(t *testing.T) {
 		},
 	}
 
-	mockFetcher.On("FetchCategoryDetails", "", "spain:catalonia:barcelona").Return(fakeData, nil)
+	mockFetcher.On("FetchCategoryDetails", "", "spain:catalonia:barcelona", "", "").Return(fakeData, nil)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/category/details/spain/catalonia/barcelona", nil)
 	w := httptest.NewRecorder()
@@ -52,7 +52,7 @@ func TestCategoryDetailsController_Success(t *testing.T) {
 func TestCategoryDetailsController_Error(t *testing.T) {
 	mockFetcher := mocks.NewCategoryDetailsFetcher(t)
 
-	mockFetcher.On("FetchCategoryDetails", "", "spain:catalonia:barcelona").Return(nil, assert.AnError)
+	mockFetcher.On("FetchCategoryDetails", "", "spain:catalonia:barcelona", "", "").Return(nil, assert.AnError)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/category/details/spain/catalonia/barcelona", nil)
 	w := httptest.NewRecorder()
@@ -101,4 +101,76 @@ func TestCategoryDetailsController_EmptySlug(t *testing.T) {
 	var result map[string]interface{}
 	json.NewDecoder(resp.Body).Decode(&result)
 	assert.Equal(t, "country is required", result["error"])
+}
+
+func TestCategoryDetailsController_WithPT(t *testing.T) {
+	mockFetcher := mocks.NewCategoryDetailsFetcher(t)
+
+	fakeData := map[string]interface{}{
+		"GeoInfo": map[string]interface{}{
+			"ShortName": "USA",
+		},
+	}
+
+	mockFetcher.On("FetchCategoryDetails", "", "usa", "3", "").Return(fakeData, nil)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/category/details/usa?pt=3", nil)
+	w := httptest.NewRecorder()
+
+	ctx := context.NewContext()
+	ctx.Reset(w, req)
+	ctx.Input.SetParam(":splat", "usa")
+
+	controller := &CategoryDetailsController{
+		Fetcher: mockFetcher,
+	}
+	controller.Ctx = ctx
+	controller.Data = make(map[interface{}]interface{})
+
+	controller.Get()
+
+	resp := w.Result()
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	var result map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&result)
+	assert.NotNil(t, result)
+	geoInfo := result["GeoInfo"].(map[string]interface{})
+	assert.Equal(t, "USA", geoInfo["ShortName"])
+}
+
+func TestCategoryDetailsController_WithPTAndLimit(t *testing.T) {
+	mockFetcher := mocks.NewCategoryDetailsFetcher(t)
+
+	fakeData := map[string]interface{}{
+		"GeoInfo": map[string]interface{}{
+			"ShortName": "USA",
+		},
+	}
+
+	mockFetcher.On("FetchCategoryDetails", "", "usa", "3", "24").Return(fakeData, nil)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/category/details/usa?pt=3&limit=24", nil)
+	w := httptest.NewRecorder()
+
+	ctx := context.NewContext()
+	ctx.Reset(w, req)
+	ctx.Input.SetParam(":splat", "usa")
+
+	controller := &CategoryDetailsController{
+		Fetcher: mockFetcher,
+	}
+	controller.Ctx = ctx
+	controller.Data = make(map[interface{}]interface{})
+
+	controller.Get()
+
+	resp := w.Result()
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	var result map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&result)
+	assert.NotNil(t, result)
+	geoInfo := result["GeoInfo"].(map[string]interface{})
+	assert.Equal(t, "USA", geoInfo["ShortName"])
 }

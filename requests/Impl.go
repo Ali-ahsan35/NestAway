@@ -9,7 +9,7 @@ func (b *BreadcrumbFetcherImpl) FetchBreadcrumb(baseURL, keyword string) (map[st
 type PropertiesFetcherImpl struct{}
 
 func (p *PropertiesFetcherImpl) FetchProperties(baseURL string, params PropertyParams) (map[string]interface{}, error) {
-    return FetchProperties(baseURL, params)
+	return FetchProperties(baseURL, params)
 }
 
 type PropertyImagesFetcherImpl struct{}
@@ -20,18 +20,24 @@ func (p *PropertyImagesFetcherImpl) FetchPropertyImages(baseURL string, property
 
 type PropertyDetailsFetcherImpl struct{}
 
-func (p *PropertyDetailsFetcherImpl) FetchPropertyDetails(baseURL string,ids string) (map[string]interface{}, error) {
-	return FetchPropertyDetails(baseURL,ids)
+func (p *PropertyDetailsFetcherImpl) FetchPropertyDetails(baseURL string, ids string) (map[string]interface{}, error) {
+	return FetchPropertyDetails(baseURL, ids)
 }
 
 type CategoryDetailsFetcherImpl struct{}
 
-func (p *CategoryDetailsFetcherImpl) FetchCategoryDetails(baseURL string,slug string) (map[string]interface{}, error) {
-	return FetchCategoryDetails(baseURL,slug)
+func (p *CategoryDetailsFetcherImpl) FetchCategoryDetails(baseURL string, slug string, pt string, limit string) (map[string]interface{}, error) {
+	return FetchCategoryDetails(baseURL, slug, pt, limit)
 }
 
 type CategoryPageFetcherImpl struct{}
 
 func (c *CategoryPageFetcherImpl) FetchCategoryPage(baseURL, slug string) (CategoryData, error) {
 	return FetchCategoryPage(baseURL, slug)
+}
+
+type CategoryPageByTypeFetcherImpl struct{}
+
+func (c *CategoryPageByTypeFetcherImpl) FetchCategoryPageWithType(baseURL, slug string, pt int) (CategoryData, error) {
+	return FetchCategoryPageWithType(baseURL, slug, pt)
 }

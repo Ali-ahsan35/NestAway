@@ -169,3 +169,72 @@ func TestFetchCategoryPage_WithSections(t *testing.T) {
 	sectionItems := section["ProcessedItems"].([]map[string]interface{})
 	assert.Len(t, sectionItems, 1)
 }
+
+func TestFetchCategoryPageWithType_SendsPTQuery(t *testing.T) {
+	fakeServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "3", r.URL.Query().Get("pt"))
+		assert.Equal(t, "24", r.URL.Query().Get("limit"))
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"GeoInfo": map[string]interface{}{
+				"ShortName":     "USA",
+				"PropertyCount": float64(10),
+				"Breadcrumbs":   []interface{}{},
+			},
+			"Result": map[string]interface{}{
+				"Items":    []interface{}{},
+				"Sections": []interface{}{},
+			},
+		})
+	}))
+	defer fakeServer.Close()
+
+	data, err := FetchCategoryPageWithType(fakeServer.URL, "usa", 3)
+
+	assert.NoError(t, err)
+	assert.Equal(t, "USA", data.LocationName)
+}
+
+func TestFillItemsFromSections_FillsUpToTarget(t *testing.T) {
+	baseItems := []map[string]interface{}{
+		{"ID": "A"},
+		{"ID": "B"},
+	}
+
+	sections := []interface{}{
+		map[string]interface{}{
+			"ProcessedItems": []map[string]interface{}{
+				{"ID": "C"},
+				{"ID": "D"},
+				{"ID": "E"},
+			},
+		},
+	}
+
+	result := fillItemsFromSections(baseItems, sections, 4)
+	assert.Equal(t, 4, len(result))
+	assert.Equal(t, "A", result[0]["ID"])
+	assert.Equal(t, "B", result[1]["ID"])
+}
+
+func TestFillItemsFromSections_DeduplicatesByID(t *testing.T) {
+	baseItems := []map[string]interface{}{
+		{"ID": "A"},
+	}
+
+	sections := []interface{}{
+		map[string]interface{}{
+			"ProcessedItems": []map[string]interface{}{
+				{"ID": "A"},
+				{"ID": "B"},
+				{"ID": "C"},
+			},
+		},
+	}
+
+	result := fillItemsFromSections(baseItems, sections, 3)
+	assert.Equal(t, 3, len(result))
+	assert.Equal(t, "A", result[0]["ID"])
+	assert.Equal(t, "B", result[1]["ID"])
+	assert.Equal(t, "C", result[2]["ID"])
+}

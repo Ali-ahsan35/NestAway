@@ -9,9 +9,9 @@ type CategoryDetailsFetcher struct {
 	mock.Mock
 }
 
-// FetchCategoryDetails provides a mock function with given fields: baseURL, slug
-func (_m *CategoryDetailsFetcher) FetchCategoryDetails(baseURL string, slug string) (map[string]interface{}, error) {
-	ret := _m.Called(baseURL, slug)
+// FetchCategoryDetails provides a mock function with given fields: baseURL, slug, pt, limit
+func (_m *CategoryDetailsFetcher) FetchCategoryDetails(baseURL string, slug string, pt string, limit string) (map[string]interface{}, error) {
+	ret := _m.Called(baseURL, slug, pt, limit)
 
 	if len(ret) == 0 {
 		panic("no return value specified for FetchCategoryDetails")
@@ -19,19 +19,19 @@ func (_m *CategoryDetailsFetcher) FetchCategoryDetails(baseURL string, slug stri
 
 	var r0 map[string]interface{}
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string, string) (map[string]interface{}, error)); ok {
-		return rf(baseURL, slug)
+	if rf, ok := ret.Get(0).(func(string, string, string, string) (map[string]interface{}, error)); ok {
+		return rf(baseURL, slug, pt, limit)
 	}
-	if rf, ok := ret.Get(0).(func(string, string) map[string]interface{}); ok {
-		r0 = rf(baseURL, slug)
+	if rf, ok := ret.Get(0).(func(string, string, string, string) map[string]interface{}); ok {
+		r0 = rf(baseURL, slug, pt, limit)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(map[string]interface{})
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(string, string) error); ok {
-		r1 = rf(baseURL, slug)
+	if rf, ok := ret.Get(1).(func(string, string, string, string) error); ok {
+		r1 = rf(baseURL, slug, pt, limit)
 	} else {
 		r1 = ret.Error(1)
 	}

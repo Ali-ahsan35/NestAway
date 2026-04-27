@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 )
 
-func FetchCategoryDetails(baseURL string, slug string) (map[string]interface{}, error) {
+func FetchCategoryDetails(baseURL string, slug string, pt string, limit string) (map[string]interface{}, error) {
 	apiURL := baseURL + "/api/v1/category/details/" + slug +
 		"?aggsAvgPrice=1" +
 		"&aggsAvgRating=1" +
@@ -17,6 +18,13 @@ func FetchCategoryDetails(baseURL string, slug string) (map[string]interface{}, 
 		"&items=1" +
 		"&locations=US" +
 		"&sections=1"
+
+	if pt != "" {
+		apiURL += "&pt=" + url.QueryEscape(pt)
+	}
+	if limit != "" {
+		apiURL += "&limit=" + url.QueryEscape(limit)
+	}
 
 	fmt.Println("CategoryDetails URL:", apiURL)
 
