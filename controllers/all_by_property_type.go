@@ -3,9 +3,9 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"smartours/requests"
@@ -18,21 +18,20 @@ type AllByPropertyTypeController struct {
 	Fetcher requests.CategoryPageByTypeFetcher
 }
 
-// propertyTypesFilePath is kept as a variable to make testing easier.
 var propertyTypesFilePath = filepath.Join("static", "data", "property_types.json")
 
-func loadPropertyTypeMap(path string) (map[string]int, error) {
+func loadSubcategoryMapping(path string) (map[string]map[string]string, error) {
 	body, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	raw := map[string]int{}
+	raw := map[string]map[string]string{}
 	if err := json.Unmarshal(body, &raw); err != nil {
 		return nil, err
 	}
 
-	normalized := make(map[string]int, len(raw))
+	normalized := make(map[string]map[string]string, len(raw))
 	for key, value := range raw {
 		normalized[strings.ToLower(strings.TrimSpace(key))] = value
 	}
@@ -41,8 +40,16 @@ func loadPropertyTypeMap(path string) (map[string]int, error) {
 }
 
 func (c *AllByPropertyTypeController) Get() {
-	rawSlug := strings.Trim(c.Ctx.Input.Param(":splat"), "/")
-	propertyType := strings.ToLower(strings.TrimSpace(c.Ctx.Input.Param(":propertyType")))
+	path := strings.Trim(c.Ctx.Request.URL.Path, "/")
+	segments := strings.Split(path, "/")
+	if len(segments) < 3 || strings.ToLower(segments[0]) != "all" {
+		c.Data["Error"] = "invalid sub-category route"
+		c.TplName = "all_by_type.tpl"
+		return
+	}
+
+	rawSlug := strings.Join(segments[1:len(segments)-1], "/")
+	propertyType := strings.ToLower(strings.TrimSpace(segments[len(segments)-1]))
 
 	if rawSlug == "" {
 		c.Data["Error"] = "location slug is required"
@@ -57,15 +64,15 @@ func (c *AllByPropertyTypeController) Get() {
 		return
 	}
 
-	typeMap, err := loadPropertyTypeMap(propertyTypesFilePath)
+	mapping, err := loadSubcategoryMapping(propertyTypesFilePath)
 	if err != nil {
-		c.Data["Error"] = "failed to load property type mappings"
+		c.Data["Error"] = "failed to load subcategory mappings"
 		c.Data["Country"] = rawSlug
 		c.TplName = "all_by_type.tpl"
 		return
 	}
 
-	pt, ok := typeMap[propertyType]
+	params, ok := mapping[propertyType]
 	if !ok {
 		c.Data["Error"] = fmt.Sprintf("unsupported property type: %s", propertyType)
 		c.Data["Country"] = rawSlug
@@ -76,22 +83,39 @@ func (c *AllByPropertyTypeController) Get() {
 
 	localURL, _ := beego.AppConfig.String("local_base_url")
 
-	data, err := c.Fetcher.FetchCategoryPageWithType(localURL, rawSlug, pt)
+	data, err := c.Fetcher.FetchCategoryPageWithType(localURL, rawSlug, params)
 	if err != nil {
 		c.Data["Error"] = err.Error()
 		c.Data["Country"] = rawSlug
 		c.Data["PropertyType"] = propertyType
-		c.Data["PropertyTypeID"] = strconv.Itoa(pt)
 		c.TplName = "all_by_type.tpl"
 		return
 	}
 
+	// Build refine URL for "View More Properties"
+	refineURL := buildRefineURL(rawSlug, params)
+
+	displayType := strings.ReplaceAll(propertyType, "-", " ")
+
 	c.Data["Items"] = data.Items
+	c.Data["Sections"] = data.Sections
 	c.Data["Country"] = rawSlug
-	c.Data["PropertyType"] = propertyType
-	c.Data["PropertyTypeID"] = strconv.Itoa(pt)
+	c.Data["PropertyType"] = displayType
 	c.Data["LocationName"] = data.LocationName
 	c.Data["PropertyCount"] = data.PropertyCount
 	c.Data["Breadcrumbs"] = data.Breadcrumbs
+	c.Data["RefineURL"] = refineURL
 	c.TplName = "all_by_type.tpl"
+}
+
+func buildRefineURL(slug string, params map[string]string) string {
+	// Convert slug to location name for search param
+	// usa/texas -> usa texas
+	location := strings.ReplaceAll(slug, "/", " ")
+	query := url.Values{}
+	query.Set("search", location)
+	for key, value := range params {
+		query.Set(key, value)
+	}
+	return "/refine?" + query.Encode()
 }

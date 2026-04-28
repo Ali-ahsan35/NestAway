@@ -51,9 +51,21 @@
     </h2>
 
     <div class="category-content">
+        {{if gt (len .Items) 0}}
         <div class="grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px; padding:20px 0;">
             {{template "card.tpl" .}}
         </div>
+        {{else}}
+        <div style="padding:20px 0; color:#6b7280;">No properties found for this sub-category.</div>
+        {{end}}
+    </div>
+
+    <!-- View More Properties -->
+    <div style="text-align:center; padding:40px 0;">
+        <a href="{{.RefineURL}}"
+        style="background:var(--primary-color); color:white; padding:14px 32px; border-radius:8px; text-decoration:none; font-weight:700; font-size:16px;">
+            View More Properties
+        </a>
     </div>
 
     {{template "footer.tpl" .}}

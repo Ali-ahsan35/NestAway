@@ -189,7 +189,7 @@ func TestFetchCategoryPageWithType_SendsPTQuery(t *testing.T) {
 	}))
 	defer fakeServer.Close()
 
-	data, err := FetchCategoryPageWithType(fakeServer.URL, "usa", 3)
+	data, err := FetchCategoryPageWithType(fakeServer.URL, "usa", map[string]string{"pt": "3"})
 
 	assert.NoError(t, err)
 	assert.Equal(t, "USA", data.LocationName)

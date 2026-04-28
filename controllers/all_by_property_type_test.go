@@ -18,15 +18,15 @@ type fakeCategoryPageByTypeFetcher struct {
 	err       error
 	gotBase   string
 	gotSlug   string
-	gotPT     int
+	gotParams map[string]string
 	callCount int
 }
 
-func (f *fakeCategoryPageByTypeFetcher) FetchCategoryPageWithType(baseURL, slug string, pt int) (requests.CategoryData, error) {
+func (f *fakeCategoryPageByTypeFetcher) FetchCategoryPageWithType(baseURL, slug string, params map[string]string) (requests.CategoryData, error) {
 	f.callCount++
 	f.gotBase = baseURL
 	f.gotSlug = slug
-	f.gotPT = pt
+	f.gotParams = params
 	return f.data, f.err
 }
 
@@ -41,7 +41,7 @@ func writeTypeMapFile(t *testing.T, content string) string {
 
 func TestAllByPropertyTypeController_Success(t *testing.T) {
 	oldPath := propertyTypesFilePath
-	propertyTypesFilePath = writeTypeMapFile(t, `{"cabin":3,"resort":7}`)
+	propertyTypesFilePath = writeTypeMapFile(t, `{"cabins":{"pt":"3"},"resorts":{"pt":"7"}}`)
 	defer func() { propertyTypesFilePath = oldPath }()
 
 	fetcher := &fakeCategoryPageByTypeFetcher{
@@ -54,13 +54,13 @@ func TestAllByPropertyTypeController_Success(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodGet, "/all/usa/cabin", nil)
+	req := httptest.NewRequest(http.MethodGet, "/all/usa/cabins", nil)
 	w := httptest.NewRecorder()
 
 	ctx := context.NewContext()
 	ctx.Reset(w, req)
 	ctx.Input.SetParam(":splat", "usa")
-	ctx.Input.SetParam(":propertyType", "cabin")
+	ctx.Input.SetParam(":propertyType", "cabins")
 
 	controller := &AllByPropertyTypeController{Fetcher: fetcher}
 	controller.Ctx = ctx
@@ -68,29 +68,28 @@ func TestAllByPropertyTypeController_Success(t *testing.T) {
 
 	controller.Get()
 
-	assert.Equal(t, "all.tpl", controller.TplName)
+	assert.Equal(t, "all_by_type.tpl", controller.TplName)
 	assert.Equal(t, "USA", controller.Data["LocationName"])
-	assert.Equal(t, "cabin", controller.Data["PropertyType"])
-	assert.Equal(t, "3", controller.Data["PropertyTypeID"])
+	assert.Equal(t, "cabins", controller.Data["PropertyType"])
 	assert.Equal(t, "usa", fetcher.gotSlug)
-	assert.Equal(t, 3, fetcher.gotPT)
+	assert.Equal(t, map[string]string{"pt": "3"}, fetcher.gotParams)
 	assert.Equal(t, 1, fetcher.callCount)
 }
 
 func TestAllByPropertyTypeController_UnsupportedType(t *testing.T) {
 	oldPath := propertyTypesFilePath
-	propertyTypesFilePath = writeTypeMapFile(t, `{"cabin":3}`)
+	propertyTypesFilePath = writeTypeMapFile(t, `{"cabins":{"pt":"3"}}`)
 	defer func() { propertyTypesFilePath = oldPath }()
 
 	fetcher := &fakeCategoryPageByTypeFetcher{}
 
-	req := httptest.NewRequest(http.MethodGet, "/all/usa/hotel", nil)
+	req := httptest.NewRequest(http.MethodGet, "/all/usa/hotels", nil)
 	w := httptest.NewRecorder()
 
 	ctx := context.NewContext()
 	ctx.Reset(w, req)
 	ctx.Input.SetParam(":splat", "usa")
-	ctx.Input.SetParam(":propertyType", "hotel")
+	ctx.Input.SetParam(":propertyType", "hotels")
 
 	controller := &AllByPropertyTypeController{Fetcher: fetcher}
 	controller.Ctx = ctx
@@ -98,21 +97,21 @@ func TestAllByPropertyTypeController_UnsupportedType(t *testing.T) {
 
 	controller.Get()
 
-	assert.Equal(t, "all.tpl", controller.TplName)
-	assert.Equal(t, "unsupported property type: hotel", controller.Data["Error"])
+	assert.Equal(t, "all_by_type.tpl", controller.TplName)
+	assert.Equal(t, "unsupported property type: hotels", controller.Data["Error"])
 	assert.Equal(t, 0, fetcher.callCount)
 }
 
 func TestAllByPropertyTypeController_MissingSlug(t *testing.T) {
 	fetcher := &fakeCategoryPageByTypeFetcher{}
 
-	req := httptest.NewRequest(http.MethodGet, "/all//cabin", nil)
+	req := httptest.NewRequest(http.MethodGet, "/all//cabins", nil)
 	w := httptest.NewRecorder()
 
 	ctx := context.NewContext()
 	ctx.Reset(w, req)
 	ctx.Input.SetParam(":splat", "")
-	ctx.Input.SetParam(":propertyType", "cabin")
+	ctx.Input.SetParam(":propertyType", "cabins")
 
 	controller := &AllByPropertyTypeController{Fetcher: fetcher}
 	controller.Ctx = ctx
@@ -120,7 +119,7 @@ func TestAllByPropertyTypeController_MissingSlug(t *testing.T) {
 
 	controller.Get()
 
-	assert.Equal(t, "all.tpl", controller.TplName)
+	assert.Equal(t, "all_by_type.tpl", controller.TplName)
 	assert.Equal(t, "location slug is required", controller.Data["Error"])
 	assert.Equal(t, 0, fetcher.callCount)
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -21,18 +22,19 @@ func FetchCategoryPage(baseURL string, slug string) (CategoryData, error) {
 	return fetchCategoryPageByURL(apiURL)
 }
 
-func FetchCategoryPageWithType(baseURL string, slug string, pt int) (CategoryData, error) {
-	apiURL := fmt.Sprintf("%s/api/v1/category/details/%s?pt=%d&limit=24", baseURL, slug, pt)
-	data, err := fetchCategoryPageByURL(apiURL)
+func FetchCategoryPageWithType(baseURL string, slug string, params map[string]string) (CategoryData, error) {
+	apiURL, err := url.Parse(baseURL + "/api/v1/category/details/" + slug)
 	if err != nil {
 		return CategoryData{}, err
 	}
 
-	if len(data.Items) < 24 {
-		data.Items = fillItemsFromSections(data.Items, data.Sections, 24)
+	query := apiURL.Query()
+	for key, value := range params {
+		query.Set(key, value)
 	}
+	apiURL.RawQuery = query.Encode()
 
-	return data, nil
+	return fetchCategoryPageByURL(apiURL.String())
 }
 
 func fillItemsFromSections(items []map[string]interface{}, sections []interface{}, target int) []map[string]interface{} {
@@ -194,6 +196,8 @@ func fetchCategoryPageByURL(apiURL string) (CategoryData, error) {
 			}
 		}
 	}
+	processedItems = fillItemsFromSections(processedItems, sections, 24)
+
 	return CategoryData{
 		LocationName:  locationName,
 		PropertyCount: propertyCount,

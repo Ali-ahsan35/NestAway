@@ -36,8 +36,14 @@ func (c *CategoryPageFetcherImpl) FetchCategoryPage(baseURL, slug string) (Categ
 	return FetchCategoryPage(baseURL, slug)
 }
 
+// type CategoryPageByTypeFetcherImpl struct{}
+
+// func (c *CategoryPageByTypeFetcherImpl) FetchCategoryPageWithType(baseURL, slug string, pt int) (CategoryData, error) {
+// 	return FetchCategoryPageWithType(baseURL, slug, pt)
+// }
+
 type CategoryPageByTypeFetcherImpl struct{}
 
-func (c *CategoryPageByTypeFetcherImpl) FetchCategoryPageWithType(baseURL, slug string, pt int) (CategoryData, error) {
-	return FetchCategoryPageWithType(baseURL, slug, pt)
+func (c *CategoryPageByTypeFetcherImpl) FetchCategoryPageWithType(baseURL, slug string, params map[string]string) (CategoryData, error) {
+    return FetchCategoryPageWithType(baseURL, slug, params)
 }

@@ -25,5 +25,5 @@ type CategoryPageFetcher interface {
 }
 
 type CategoryPageByTypeFetcher interface {
-	FetchCategoryPageWithType(baseURL, slug string, pt int) (CategoryData, error)
+	FetchCategoryPageWithType(baseURL string, slug string, params map[string]string) (CategoryData, error)
 }
