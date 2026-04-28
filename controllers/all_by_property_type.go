@@ -46,14 +46,14 @@ func (c *AllByPropertyTypeController) Get() {
 
 	if rawSlug == "" {
 		c.Data["Error"] = "location slug is required"
-		c.TplName = "all.tpl"
+		c.TplName = "all_by_type.tpl"
 		return
 	}
 
 	if propertyType == "" {
 		c.Data["Error"] = "property type is required"
 		c.Data["Country"] = rawSlug
-		c.TplName = "all.tpl"
+		c.TplName = "all_by_type.tpl"
 		return
 	}
 
@@ -61,7 +61,7 @@ func (c *AllByPropertyTypeController) Get() {
 	if err != nil {
 		c.Data["Error"] = "failed to load property type mappings"
 		c.Data["Country"] = rawSlug
-		c.TplName = "all.tpl"
+		c.TplName = "all_by_type.tpl"
 		return
 	}
 
@@ -70,7 +70,7 @@ func (c *AllByPropertyTypeController) Get() {
 		c.Data["Error"] = fmt.Sprintf("unsupported property type: %s", propertyType)
 		c.Data["Country"] = rawSlug
 		c.Data["PropertyType"] = propertyType
-		c.TplName = "all.tpl"
+		c.TplName = "all_by_type.tpl"
 		return
 	}
 
@@ -82,7 +82,7 @@ func (c *AllByPropertyTypeController) Get() {
 		c.Data["Country"] = rawSlug
 		c.Data["PropertyType"] = propertyType
 		c.Data["PropertyTypeID"] = strconv.Itoa(pt)
-		c.TplName = "all.tpl"
+		c.TplName = "all_by_type.tpl"
 		return
 	}
 
@@ -93,5 +93,5 @@ func (c *AllByPropertyTypeController) Get() {
 	c.Data["LocationName"] = data.LocationName
 	c.Data["PropertyCount"] = data.PropertyCount
 	c.Data["Breadcrumbs"] = data.Breadcrumbs
-	c.TplName = "all.tpl"
+	c.TplName = "all_by_type.tpl"
 }

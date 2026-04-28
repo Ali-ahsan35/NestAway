@@ -1,6 +1,27 @@
 {
-  "resort": 7,
-  "cabin": 3,
-  "cottage": 12,
-  "villas": 9
+  "cabin": { "pt": 3, "displayName": "Cabin" },
+  "cottage": { "pt": 12, "displayName": "Cottage" },
+  "hotel": { "pt": 5, "displayName": "Hotel" },
+  "resort": { "pt": 7, "displayName": "Resort" },
+  "ski-chalets": { "pt": 13, "displayName": "Ski Chalets" },
+  "villas": { "pt": 9, "displayName": "Villas" },
+  "time-shares": { "pt": 16, "displayName": "Time Shares" },
+
+  "family-rental": { "amenities": [5], "displayName": "Family Rental" },
+  "luxury-rental": { "order": 3, "displayName": "Luxury Rental" },
+  "discount": { "order": 2, "displayName": "Discount" },
+  "ocean": { "amenities": [19, 20], "displayName": "Ocean" },
+  "pet-friendly": { "amenities": [11], "displayName": "Pet-friendly" },
+  "pools": { "amenities": [12], "displayName": "Pools" },
+  "beach-rental": { "amenities": [18, 19], "displayName": "Beach Rental" },
+  "group-travel": { "pax": 5, "displayName": "Group Travel" },
+  "vacation-rental": { "order": 1, "displayName": "Vacation Rental" },
+  "winter": { "isWinter": 1, "displayName": "Winter" },
+  "summer-rentals": { "isSummer": 1, "displayName": "Summer Rentals" },
+  "short-term": { "isShortTermStays": 1, "displayName": "Short Term" },
+  "business-travel": { "isBusinessTravel": 1, "displayName": "Business Travel" },
+  "sustainable-travel": { "ecoFriendly": 1, "displayName": "Sustainable Travel" },
+  "holiday-home": { "sqs": "rentals", "displayName": "Holiday Home" },
+  "unique-vacation-rental": { "pt": [14, 15], "displayName": "Unique Vacation Rental" },
+  "monthly-stays": { "isMonthStays": 1, "displayName": "Monthly Stays" }
 }
