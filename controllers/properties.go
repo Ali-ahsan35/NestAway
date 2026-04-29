@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"smartours/requests"
+
 	beego "github.com/beego/beego/v2/server/web"
 )
 
@@ -20,6 +21,25 @@ func (c *PropertiesController) Get() {
 	guests := c.GetString("pax")
 	dateStart := c.GetString("dateStart")
 	dateEnd := c.GetString("dateEnd")
+	extraParams := map[string]string{}
+	for key, values := range c.Ctx.Request.URL.Query() {
+		if len(values) == 0 {
+			continue
+		}
+		extraParams[key] = values[0]
+	}
+	delete(extraParams, "category")
+	delete(extraParams, "order")
+	delete(extraParams, "amenities")
+	delete(extraParams, "ecoFriendly")
+	delete(extraParams, "amount")
+	delete(extraParams, "selectedCurrency")
+	delete(extraParams, "pax")
+	delete(extraParams, "dateStart")
+	delete(extraParams, "dateEnd")
+	if len(extraParams) == 0 {
+		extraParams = nil
+	}
 	if order == "" {
 		order = "1"
 	}
@@ -35,6 +55,7 @@ func (c *PropertiesController) Get() {
 		Guests:           guests,
 		DateStart:        dateStart,
 		DateEnd:          dateEnd,
+		ExtraParams:      extraParams,
 	})
 	if err != nil {
 		c.Data["json"] = map[string]string{"error": err.Error()}

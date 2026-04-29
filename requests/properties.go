@@ -16,12 +16,13 @@ type PropertyParams struct {
 	Guests           string
 	DateStart        string
 	DateEnd          string
+	ExtraParams      map[string]string
 }
 
 func FetchProperties(baseURL string, params PropertyParams) (map[string]interface{}, error) {
 
 	apiURL := baseURL + "/api/properties/category/v1?order=" + params.Order + "&category=" + url.QueryEscape(params.Category) +
-    "&limit=192&items=1&locations=BD&device=desktop&page=1"
+		"&limit=192&items=1&locations=BD&device=desktop&page=1"
 
 	if params.Amenities != "" {
 		apiURL += "&amenities=" + params.Amenities
@@ -45,6 +46,27 @@ func FetchProperties(baseURL string, params PropertyParams) (map[string]interfac
 	}
 	if params.DateEnd != "" {
 		apiURL += "&dateEnd=" + params.DateEnd
+	}
+
+	reservedKeys := map[string]struct{}{
+		"category":         {},
+		"order":            {},
+		"amenities":        {},
+		"ecoFriendly":      {},
+		"amount":           {},
+		"selectedCurrency": {},
+		"pax":              {},
+		"dateStart":        {},
+		"dateEnd":          {},
+	}
+	for key, value := range params.ExtraParams {
+		if key == "" || value == "" {
+			continue
+		}
+		if _, reserved := reservedKeys[key]; reserved {
+			continue
+		}
+		apiURL += "&" + url.QueryEscape(key) + "=" + url.QueryEscape(value)
 	}
 
 	req, err := http.NewRequest("GET", apiURL, nil)

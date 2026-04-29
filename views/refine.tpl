@@ -456,7 +456,7 @@
 
     <script>window.searchKeyword = "{{.Keyword}}";</script>
     <script src="/static/js/currency.js"></script>
-    <script src="/static/js/refine.js"></script>
+    <script src="/static/js/refine.js?v=1"></script>
     <script src="/static/js/sort.js"></script>
     <script src="/static/js/modal.js"></script>
     <script src="/static/js/redirect.js"></script>

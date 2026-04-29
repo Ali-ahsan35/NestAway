@@ -1,6 +1,30 @@
 document.addEventListener("DOMContentLoaded", function () {
   const keyword = window.searchKeyword || "Barcelona, Spain";
   let currentCategory = "";
+  const reservedKeys = new Set([
+    "search",
+    "order",
+    "amenities",
+    "ecoFriendly",
+    "amount",
+    "selectedCurrency",
+    "pax",
+    "dateStart",
+    "dateEnd"
+  ]);
+
+  function getExtraParamsFromUrl() {
+    const extras = {};
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.forEach((value, key) => {
+      if (!reservedKeys.has(key)) {
+        extras[key] = value;
+      }
+    });
+    return extras;
+  }
+
+  const initialExtraParams = getExtraParamsFromUrl();
 
   function currentCurrency() {
     if (window.CurrencyManager && window.CurrencyManager.getCurrentCurrency) {
@@ -83,6 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const defaultOrder = parseInt(urlParams.get('order')) || 1;
 
       const savedFilters = {};
+      window.extraParams = getExtraParamsFromUrl();
       if (urlParams.get('amenities')) {
           savedFilters.amenities = urlParams.get('amenities').split('-').map(Number);
       }
@@ -154,7 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   function updateURL(order, filters = {}) {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(window.location.search);
     
     // Always include search and order
     params.set('search', window.searchKeyword);
@@ -181,6 +206,13 @@ document.addEventListener("DOMContentLoaded", function () {
     if (filters.checkout) {
         params.set('dateEnd', filters.checkout);
     }
+
+    const extras = Object.keys(window.extraParams || {}).length > 0
+      ? window.extraParams
+      : initialExtraParams;
+    Object.keys(extras).forEach((key) => {
+      params.set(key, extras[key]);
+    });
 
     // Update URL without reloading page
     window.history.pushState({}, '', '/refine?' + params.toString());
@@ -213,6 +245,13 @@ document.addEventListener("DOMContentLoaded", function () {
         url += "&dateStart=" + filters.checkin + "&dateEnd=" + filters.checkout;
         console.log("Added dates to URL:", filters.checkin, filters.checkout); 
     }
+
+    const extras = Object.keys(window.extraParams || {}).length > 0
+      ? window.extraParams
+      : initialExtraParams;
+    Object.keys(extras).forEach((key) => {
+      url += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(extras[key]);
+    });
 
     console.log("Fetching URL:", url);
 
