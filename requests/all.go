@@ -10,11 +10,12 @@ import (
 )
 
 type CategoryData struct {
-	LocationName  string
-	PropertyCount string
-	Breadcrumbs   []interface{}
-	Items         []map[string]interface{}
-	Sections      []interface{}
+	LocationName     string
+	LocationFullName string
+	PropertyCount    string
+	Breadcrumbs      []interface{}
+	Items            []map[string]interface{}
+	Sections         []interface{}
 }
 
 func FetchCategoryPage(baseURL string, slug string) (CategoryData, error) {
@@ -108,6 +109,7 @@ func fetchCategoryPageByURL(apiURL string) (CategoryData, error) {
 	geoInfo, _ := result["GeoInfo"].(map[string]interface{})
 	propertyCount := ""
 	locationName := ""
+	locationFullName := ""
 	breadcrumbs := []interface{}{}
 
 	if geoInfo != nil {
@@ -116,6 +118,9 @@ func fetchCategoryPageByURL(apiURL string) (CategoryData, error) {
 		}
 		if name, ok := geoInfo["ShortName"].(string); ok {
 			locationName = name
+		}
+		if fullName, ok := geoInfo["Name"].(string); ok {
+			locationFullName = fullName
 		}
 		if bc, ok := geoInfo["Breadcrumbs"].([]interface{}); ok {
 			breadcrumbs = bc
@@ -199,10 +204,11 @@ func fetchCategoryPageByURL(apiURL string) (CategoryData, error) {
 	processedItems = fillItemsFromSections(processedItems, sections, 24)
 
 	return CategoryData{
-		LocationName:  locationName,
-		PropertyCount: propertyCount,
-		Breadcrumbs:   breadcrumbs,
-		Items:         processedItems,
-		Sections:      sections,
+		LocationName:     locationName,
+		LocationFullName: locationFullName,
+		PropertyCount:    propertyCount,
+		Breadcrumbs:      breadcrumbs,
+		Items:            processedItems,
+		Sections:         sections,
 	}, nil
 }

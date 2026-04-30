@@ -35,13 +35,20 @@
         <span class="js-place-count">{{.PropertyCount}}</span> {{.PropertyType}} Rentals Near {{.LocationName}} |
         <ol itemscope="itemscope" itemtype="http://schema.org/BreadcrumbList" style="display:inline; padding:0; margin:0; list-style:none;">
             {{range $i, $bc := .Breadcrumbs}}
-            <li itemprop="itemListElement" itemscope="itemscope" itemtype="http://schema.org/ListItem" style="display:inline;">
+            <li itemprop="itemListElement" itemscope="itemscope" itemtype="http://schema.org/ListItem" style="padding-right: 0px; display:inline;">
+                {{if gt $i 0}}<span style="margin:0 6px; color:#6b7280;">&gt;</span>{{end}}
                 <a itemprop="item" href="/all/{{index $bc "Slug"}}">
                     <span itemprop="name">{{index $bc "Name"}}</span>
                 </a>
                 <meta itemprop="Position" content="{{$i}}">
             </li>
             {{end}}
+                {{if .PropertyType}}
+                <li itemprop="itemListElement" itemscope="itemscope" itemtype="http://schema.org/ListItem" style="display:inline; padding-right: 0px;">
+                    <span style="margin:0 6px; color:#6b7280;">&gt;</span>
+                    <span style="color:#6b7280;" itemprop="name">{{.PropertyType}}</span>
+                </li>
+                {{end}}
         </ol>
     </div>
 

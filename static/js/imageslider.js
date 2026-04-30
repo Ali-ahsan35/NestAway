@@ -47,11 +47,40 @@ function initImageSlider() {
 
         // Show arrows on hover
         imageSection.addEventListener('mouseenter', () => {
-            nextBtn.style.display = 'block';
+            if (card.dataset.missingFeatureImage === 'true') {
+                nextBtn.style.display = 'none';
+                prevBtn.style.display = 'none';
+                return;
+            }
             if (card.dataset.imagesLoaded === 'true') {
+                nextBtn.style.display = 'block';
                 const idx = parseInt(card.dataset.currentIndex || '0');
                 if (idx > 0) prevBtn.style.display = 'block';
+                return;
             }
+
+            if (card.dataset.imagesChecked === 'true') {
+                return;
+            }
+
+            card.dataset.imagesChecked = 'true';
+            const propertyId = card.dataset.property_id;
+            fetch('/api/property/images?propertyId=' + propertyId)
+                .then(res => res.json())
+                .then(data => {
+                    const images = data.Images || [];
+                    if (images.length === 0) {
+                        nextBtn.style.display = 'none';
+                        prevBtn.style.display = 'none';
+                        return;
+                    }
+
+                    card.dataset.images = JSON.stringify(images);
+                    card.dataset.currentIndex = '0';
+                    card.dataset.imagesLoaded = 'true';
+                    nextBtn.style.display = 'block';
+                })
+                .catch(err => console.error('Image fetch error:', err));
         });
         imageSection.addEventListener('mouseleave', () => {
             nextBtn.style.display = 'none';
@@ -62,6 +91,10 @@ function initImageSlider() {
             e.stopPropagation();
             const propertyId = card.dataset.property_id;
 
+            if (card.dataset.fallbackImage === 'true') {
+                return;
+            }
+
             if (card.dataset.imagesLoaded === 'true') {
                 navigateSlider(card, 1);
                 return;
@@ -71,7 +104,12 @@ function initImageSlider() {
                 .then(res => res.json())
                 .then(data => {
                     const images = data.Images || [];
-                    if (images.length === 0) return;
+                    if (images.length === 0) {
+                        card.dataset.fallbackImage = 'true';
+                        nextBtn.style.display = 'none';
+                        prevBtn.style.display = 'none';
+                        return;
+                    }
 
                     card.dataset.images = JSON.stringify(images);
                     card.dataset.currentIndex = '0';

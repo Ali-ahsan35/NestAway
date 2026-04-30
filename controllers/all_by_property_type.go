@@ -93,9 +93,9 @@ func (c *AllByPropertyTypeController) Get() {
 	}
 
 	// Build refine URL for "View More Properties"
-	refineURL := buildRefineURL(rawSlug, params)
+	refineURL := buildRefineURL(rawSlug, data.LocationFullName, params)
 
-	displayType := strings.ReplaceAll(propertyType, "-", " ")
+	displayType := titleCase(strings.ReplaceAll(propertyType, "-", " "))
 
 	c.Data["Items"] = data.Items
 	c.Data["Sections"] = data.Sections
@@ -108,14 +108,28 @@ func (c *AllByPropertyTypeController) Get() {
 	c.TplName = "all_by_type.tpl"
 }
 
-func buildRefineURL(slug string, params map[string]string) string {
-	// Convert slug to location name for search param
-	// usa/texas -> usa texas
-	location := strings.ReplaceAll(slug, "/", " ")
+func buildRefineURL(slug string, locationFullName string, params map[string]string) string {
+	location := strings.TrimSpace(locationFullName)
+	if location == "" {
+		// Convert slug to location name for search param
+		// usa/texas -> usa texas
+		location = strings.ReplaceAll(slug, "/", " ")
+	}
 	query := url.Values{}
 	query.Set("search", location)
 	for key, value := range params {
 		query.Set(key, value)
 	}
 	return "/refine?" + query.Encode()
+}
+
+func titleCase(input string) string {
+	parts := strings.Fields(strings.ToLower(input))
+	for i, part := range parts {
+		if part == "" {
+			continue
+		}
+		parts[i] = strings.ToUpper(part[:1]) + part[1:]
+	}
+	return strings.Join(parts, " ")
 }

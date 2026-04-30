@@ -4,9 +4,11 @@
 {{$geo := index $item "GeoInfo"}}
 {{$partner := index $item "Partner"}}
 {{$id := index $item "ID"}}
+{{$imgName := index $prop "FeatureImage"}}
 
 {{if $prop}}
 <div class="sp-property-card"
+    {{if not $imgName}}data-missing-feature-image="true"{{end}}
     data-property_id="{{$id}}"
     data-feed="{{index $item "Feed"}}"
     data-published="{{index $item "Published"}}"
@@ -36,12 +38,10 @@
             </div>
         </div>
         <a rel="nofollow" target="_blank" class="sp-property-image" href="#" onmouseenter="buildRedirectUrl(this)" onclick="redirectToPartner(this); return false;">
-            {{$imgName := index $prop "FeatureImage"}}
-            {{if $imgName}}
             <img class="featured-image pt-featured-image"
                 src="https://imgservice.ownerdirect.com/600x600/{{$imgName}}"
+                onerror="this.onerror=null; const card=this.closest('.sp-property-card'); if(card){card.dataset.missingFeatureImage='true';} const imgs=['demo_img_01.jpg','demo_img_02.jpg','demo_img_03.jpg','demo_img_04.jpg']; this.src='/static/img/reserve_image/' + imgs[Math.floor(Math.random()*imgs.length)];"
                 alt="{{index $prop "PropertyName"}}">
-            {{end}}
             {{$price := index $prop "Price"}}
             {{if $price}}
             <span class="property-price js-price-value" data-base-usd="{{printf "%.2f" $price}}" data-price-prefix="From " data-price-suffix="">
